@@ -1,0 +1,51 @@
+[package]
+name = "lifecycler"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0 OR CC0-1.0"
+
+[dependencies]
+bevy = "0.14.0"
+bevy_ratatui = "0.6.0"
+bevy_ratatui_render = "0.5.1"
+crossterm = "0.27.0"
+ratatui = "0.27.0"
+
+[features]
+default = [
+    "dev_native",
+]
+dev = [
+    "bevy/dynamic_linking",
+    "bevy/bevy_dev_tools",
+]
+dev_native = [
+    "dev",
+    "bevy/file_watcher",
+    "bevy/embedded_watcher",
+]
+
+[lints.clippy]
+too_many_arguments = "allow"
+type_complexity = "allow"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev.package.wgpu-types]
+debug-assertions = false
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+opt-level = 3
+strip = "none"
+
+[profile.release-native]
+inherits = "release"
+
+[patch.crates-io]
+zune-jpeg = { git = "https://github.com/ironpeak/zune-image", rev = "eebb01b72c07aaf8b00200d9d87d4cba6f01651f" }
