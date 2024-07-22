@@ -486,6 +486,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_atmosphere"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e6b7ca9c515c3207ed57e99f4242beb84149bb922fe20581bcb2fa9bdf9596d"
+dependencies = [
+ "bevy",
+ "bevy_atmosphere_macros",
+ "cfg-if",
+]
+
+[[package]]
+name = "bevy_atmosphere_macros"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "790a54e66b6cd4feb0216f37f4f5ad3dcedbf120e5b504412d8bad4c462342a1"
+dependencies = [
+ "bevy_macro_utils",
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.71",
+]
+
+[[package]]
 name = "bevy_audio"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2774,9 +2798,12 @@ name = "lifecycler"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_atmosphere",
  "bevy_ratatui",
  "bevy_ratatui_render",
  "crossterm",
+ "rand",
+ "rand_chacha",
  "ratatui",
 ]
 

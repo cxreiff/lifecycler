@@ -4,11 +4,13 @@ use bevy::{
     app::ScheduleRunnerPlugin, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*,
     window::ExitCondition,
 };
+use bevy_atmosphere::plugin::AtmospherePlugin;
 use bevy_ratatui::RatatuiPlugins;
 use bevy_ratatui_render::RatatuiRenderPlugin;
 
 mod draw;
 mod input;
+mod pellets;
 mod scene;
 
 pub struct AppPlugin;
@@ -23,19 +25,29 @@ impl Plugin for AppPlugin {
                     exit_condition: ExitCondition::DontExit,
                     close_when_requested: false,
                 }),
-            ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 60.)),
+            // DefaultPlugins,
+            ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 90.)),
             FrameTimeDiagnosticsPlugin,
-            RatatuiPlugins::default(),
-            RatatuiRenderPlugin::new("main", (256, 256)),
+            RatatuiPlugins {
+                enable_mouse_capture: true,
+                ..default()
+            },
+            RatatuiRenderPlugin::new("main", (512, 512)),
+            // RatatuiRenderPlugin::new("main", (512, 512)).disable(),
+            AtmospherePlugin,
         ))
-        .insert_resource(ClearColor(Color::WHITE))
-        .init_resource::<Flags>();
+        .insert_resource(Msaa::Off)
+        .insert_resource(Flags {
+            debug: true,
+            msg: "N/A".into(),
+        });
 
-        app.add_plugins((draw::plugin, input::plugin, scene::plugin));
+        app.add_plugins((draw::plugin, input::plugin, pellets::plugin, scene::plugin));
     }
 }
 
 #[derive(Resource, Default)]
 pub struct Flags {
     debug: bool,
+    msg: String,
 }

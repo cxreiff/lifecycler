@@ -24,7 +24,9 @@ fn draw_scene_system(
     diagnostics: Res<DiagnosticsStore>,
 ) -> io::Result<()> {
     ratatui.draw(|frame| {
-        frame.render_widget(ratatui_render.widget("main").unwrap(), frame.size());
+        if let Some(widget) = ratatui_render.widget("main") {
+            frame.render_widget(widget, frame.size());
+        }
 
         #[cfg(feature = "dev")]
         if flags.debug {
@@ -32,16 +34,19 @@ fn draw_scene_system(
                 .get(&FrameTimeDiagnosticsPlugin::FPS)
                 .and_then(|fps| fps.smoothed())
             {
-                let position = Rect::new(0, 0, frame.size().width, 1);
-                let fps = Text::raw(format!("[fps: {value:.0}]")).alignment(Alignment::Center);
+                let msg = &flags.msg;
+                let position = Rect::new(0, 1, frame.size().width, 1);
+                let fps = Text::raw(format!("[msg: {msg}] [fps: {value:.0}]"))
+                    .alignment(Alignment::Center)
+                    .bg(ratatui::style::Color::Black);
 
                 frame.render_widget(fps, position);
             }
         }
 
         let position = Rect::new(
-            (frame.size().width / 2) - 15,
-            frame.size().bottom() - 2,
+            (frame.size().width / 2).saturating_sub(15),
+            frame.size().bottom().saturating_sub(2),
             30,
             1,
         );

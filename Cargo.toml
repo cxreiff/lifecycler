@@ -6,9 +6,12 @@ license = "MIT OR Apache-2.0 OR CC0-1.0"
 
 [dependencies]
 bevy = "0.14.0"
+bevy_atmosphere = "0.10.0"
 bevy_ratatui = "0.6.0"
 bevy_ratatui_render = "0.5.1"
 crossterm = "0.27.0"
+rand = "0.8.5"
+rand_chacha = "0.3.1"
 ratatui = "0.27.0"
 
 [features]
@@ -34,9 +37,6 @@ opt-level = 1
 
 [profile.dev.package."*"]
 opt-level = 3
-
-[profile.dev.package.wgpu-types]
-debug-assertions = false
 
 [profile.release]
 codegen-units = 1
