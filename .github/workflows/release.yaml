@@ -42,6 +42,9 @@ jobs:
       version: ${{ inputs.version || steps.tag.outputs.tag }}
 
   create-release:
+    needs: get-version
+    env:
+      VERSION: ${{ needs.get-version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,9 +54,14 @@ jobs:
           # changelog: CHANGELOG.md
           # (required) GitHub token for creating GitHub Releases.
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refs/tags/${{ env.VERSION }}
 
   upload-assets:
-    needs: create-release
+    needs:
+      - create-release
+      - get-version
+    env:
+      VERSION: ${{ needs.get-version.outputs.version }}
     strategy:
       matrix:
         include:
@@ -95,6 +103,17 @@ jobs:
           zip: all
           # (required) GitHub token for uploading assets to GitHub Releases.
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refs/tags/${{ env.VERSION }}
+
+      - name: test ls
+        run: ls; ls **
+      
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: binary
+          path: |
+            ${{ env.PACKAGE_NAME }}
 
   # Get itch.io target from env, because the `env` context can't be used in the `if:` condition of a job.
   # See: https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
