@@ -95,6 +95,13 @@ jobs:
           zip: all
           # (required) GitHub token for uploading assets to GitHub Releases.
           token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: binary
+          path: |
+            ${{ env.PACKAGE_NAME }}
 
   # Get itch.io target from env, because the `env` context can't be used in the `if:` condition of a job.
   # See: https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
