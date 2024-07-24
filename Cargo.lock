@@ -925,14 +925,16 @@ checksum = "c115c97a5c8a263bd0aa7001b999772c744ac5ba797d07c86f25734ce381ea69"
 
 [[package]]
 name = "bevy_ratatui"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b3e31a8cc1313252eb435401d54a7226c702bef33ff20172d56623e618edecf"
+checksum = "a186ccaaba719edda9a4d22bad3340b329552cb5d48b4883cac10b7ad2fb4d9f"
 dependencies = [
  "bevy",
+ "bitflags 2.6.0",
  "color-eyre",
  "crossterm",
  "ratatui",
+ "smol_str",
 ]
 
 [[package]]
