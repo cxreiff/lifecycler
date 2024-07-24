@@ -8,10 +8,12 @@ use bevy_atmosphere::plugin::AtmospherePlugin;
 use bevy_ratatui::RatatuiPlugins;
 use bevy_ratatui_render::RatatuiRenderPlugin;
 
+mod camera;
 mod draw;
+mod fish;
 mod input;
 mod pellets;
-mod scene;
+mod tank;
 
 pub struct AppPlugin;
 
@@ -37,12 +39,16 @@ impl Plugin for AppPlugin {
             AtmospherePlugin,
         ))
         .insert_resource(Msaa::Off)
-        .insert_resource(Flags {
-            debug: true,
-            msg: "N/A".into(),
-        });
+        .init_resource::<Flags>();
 
-        app.add_plugins((draw::plugin, input::plugin, pellets::plugin, scene::plugin));
+        app.add_plugins((
+            camera::plugin,
+            draw::plugin,
+            fish::plugin,
+            input::plugin,
+            pellets::plugin,
+            tank::plugin,
+        ));
     }
 }
 

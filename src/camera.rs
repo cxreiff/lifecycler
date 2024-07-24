@@ -1,6 +1,4 @@
-use bevy::{
-    core_pipeline::bloom::BloomSettings, pbr::ScreenSpaceAmbientOcclusionBundle, prelude::*,
-};
+use bevy::{core_pipeline::bloom::BloomSettings, prelude::*};
 use bevy_atmosphere::plugin::AtmosphereCamera;
 use bevy_ratatui_render::RatatuiRenderContext;
 
@@ -20,7 +18,6 @@ fn setup_camera_system(mut commands: Commands, ratatui_render: Res<RatatuiRender
             ..default()
         },
         BloomSettings::OLD_SCHOOL,
-        ScreenSpaceAmbientOcclusionBundle::default(),
         AtmosphereCamera::default(),
     ));
 

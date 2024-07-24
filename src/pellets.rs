@@ -12,7 +12,14 @@ use crate::Flags;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup_pellets_system)
-        .add_systems(Update, (create_pellets_system, move_pellets_system))
+        .add_systems(
+            Update,
+            (
+                create_pellets_system,
+                move_pellets_system,
+                perish_perishables_system,
+            ),
+        )
         .init_resource::<PelletThreshold>();
 }
 
@@ -33,6 +40,9 @@ pub struct PelletMaterials(Vec<Handle<StandardMaterial>>);
 
 #[derive(Resource, Default, Deref, DerefMut)]
 pub struct PelletThreshold(u32);
+
+#[derive(Component, Deref, DerefMut)]
+pub struct Perishable(Timer);
 
 fn setup_pellets_system(
     mut commands: Commands,
@@ -74,8 +84,10 @@ fn create_pellets_system(
         let crossterm::event::MouseEvent {
             kind, column, row, ..
         } = event.0;
-        if let MouseEventKind::Drag(MouseButton::Left) = kind {
-            if **pellet_threshold == 0 {
+        if let MouseEventKind::Drag(MouseButton::Left) | MouseEventKind::Down(MouseButton::Left) =
+            kind
+        {
+            if **pellet_threshold == 0 || kind == MouseEventKind::Down(MouseButton::Left) {
                 let size = ratatui.size().unwrap();
                 let camera_transform = camera.single();
                 if let Some(transform) = terminal_coords_to_world_transform(
@@ -87,8 +99,8 @@ fn create_pellets_system(
                 ) {
                     let fall_target = Vec3::new(
                         transform.translation.x.clamp(-1.94, 1.94),
-                        -1.9,
-                        pellet_rng.next_u32() as f32 / u32::MAX as f32 * 0.6 - 0.5,
+                        -1.8,
+                        pellet_rng.next_u32() as f32 / u32::MAX as f32 * 0.5 - 0.4,
                     );
                     commands.spawn((
                         Pellet,
@@ -114,17 +126,33 @@ fn move_pellets_system(
     mut pellets: Query<(Entity, &mut Transform, &PelletFalling)>,
     time: Res<Time>,
 ) {
-    for (entity, mut pellet_transform, PelletFalling(fall_target)) in &mut pellets {
+    for (id, mut pellet_transform, PelletFalling(fall_target)) in &mut pellets {
         pellet_transform.translation = pellet_transform
             .translation
-            .move_towards(*fall_target, time.delta_seconds() / 2.);
+            .move_towards(*fall_target, time.delta_seconds() * 0.3);
 
         pellet_transform.translation.x +=
             (time.elapsed_seconds() + (fall_target.x * 16.) % 3.).sin() / 800.;
         pellet_transform.translation.x = pellet_transform.translation.x.clamp(-1.94, 1.94);
 
         if pellet_transform.translation.distance(*fall_target) < 0.003 {
-            commands.entity(entity).remove::<PelletFalling>();
+            let mut entity = commands.entity(id);
+            entity.remove::<PelletFalling>();
+            entity.insert(Perishable(Timer::from_seconds(20., TimerMode::Once)));
+        }
+    }
+}
+
+fn perish_perishables_system(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut perishables: Query<(Entity, &mut Perishable)>,
+) {
+    let delta = time.delta();
+    for (id, mut timer) in &mut perishables {
+        timer.tick(delta);
+        if timer.finished() {
+            commands.entity(id).despawn();
         }
     }
 }
