@@ -1,12 +1,9 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use bevy_hanabi::{ParticleEffect, ParticleEffectBundle};
 use rand::seq::SliceRandom;
 use rand::{RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
-
-use crate::bubbles::BubblesEffect;
 
 use super::behavior::FishBehavior;
 use super::shared::{Fish, FishRng, FISH_MAX};
@@ -42,7 +39,8 @@ fn setup_fish_system(
     let mut seeded_rng = ChaCha8Rng::seed_from_u64(19878367467712);
     let fish_materials = (0..36)
         .map(|_| {
-            let base_color = Color::hsl((seeded_rng.next_u32() % 360) as f32, 0.4, 0.3);
+            let base_color =
+                Color::hsl(((seeded_rng.next_u32() % 160 + 200) % 360) as f32, 0.4, 0.3);
             let emissive = base_color.to_linear() * 0.1;
 
             materials.add(StandardMaterial {
@@ -67,7 +65,6 @@ fn spawn_fish_system(
     fish_materials: Res<FishMaterials>,
     mut fish_rng: ResMut<FishRng>,
     fishes: Query<Entity, With<Fish>>,
-    bubbles_effect: Res<BubblesEffect>,
 ) {
     fish_timer.tick(time.delta());
 
@@ -79,23 +76,15 @@ fn spawn_fish_system(
             .with_scale(Vec3::new(0.2, 0.1, 0.15));
         transform.translation += Cuboid::new(1.5, 1.5, 0.8).sample_interior(&mut fish_rng.0);
 
-        commands
-            .spawn((
-                Fish,
-                FishBehavior::default(),
-                PbrBundle {
-                    transform,
-                    mesh: fish_mesh.clone(),
-                    material: fish_materials.choose(&mut fish_rng.0).unwrap().clone(),
-                    ..default()
-                },
-            ))
-            .with_children(|commands| {
-                commands.spawn(ParticleEffectBundle {
-                    effect: ParticleEffect::new(bubbles_effect.clone()),
-                    transform: Transform::from_xyz(-1., 0.2, 0.),
-                    ..default()
-                });
-            });
+        commands.spawn((
+            Fish,
+            FishBehavior::default(),
+            PbrBundle {
+                transform,
+                mesh: fish_mesh.clone(),
+                material: fish_materials.choose(&mut fish_rng.0).unwrap().clone(),
+                ..default()
+            },
+        ));
     }
 }

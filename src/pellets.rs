@@ -8,8 +8,6 @@ use rand_chacha::{
 };
 use ratatui::layout::Rect;
 
-use crate::Flags;
-
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup_pellets_system)
         .add_systems(
@@ -77,7 +75,6 @@ fn create_pellets_system(
     pellet_mesh: Res<PelletMesh>,
     pellet_materials: Res<PelletMaterials>,
     mut pellet_threshold: ResMut<PelletThreshold>,
-    mut flags: ResMut<Flags>,
     camera: Query<&Transform, With<Camera>>,
 ) {
     for event in events.read() {
@@ -90,13 +87,9 @@ fn create_pellets_system(
             if **pellet_threshold == 0 || kind == MouseEventKind::Down(MouseButton::Left) {
                 let size = ratatui.size().unwrap();
                 let camera_transform = camera.single();
-                if let Some(transform) = terminal_coords_to_world_transform(
-                    &mut flags,
-                    column,
-                    row,
-                    size,
-                    camera_transform,
-                ) {
+                if let Some(transform) =
+                    terminal_coords_to_world_transform(column, row, size, camera_transform)
+                {
                     let fall_target = Vec3::new(
                         transform.translation.x.clamp(-1.75, 1.75),
                         -1.7,
@@ -158,7 +151,6 @@ fn perish_perishables_system(
 }
 
 fn terminal_coords_to_world_transform(
-    flags: &mut ResMut<Flags>,
     column: u16,
     row: u16,
     terminal_size: Rect,
@@ -179,7 +171,6 @@ fn terminal_coords_to_world_transform(
 
     let mut world_coords = *camera * Vec3::new(x * 2.05, -y * 2. + 0.02, 0.);
     world_coords.z = 0.;
-    flags.msg = format!("{world_coords:?}");
 
     Some(Transform::from_translation(world_coords))
 }

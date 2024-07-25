@@ -6,7 +6,7 @@ use bevy_hanabi::{
     ParticleEffectBundle, SetAttributeModifier, SizeOverLifetimeModifier, Spawner, WriterExpr,
 };
 
-const BUBBLE_INTERVAL_SECONDS: f32 = 10.;
+const BUBBLE_INTERVAL_SECONDS: f32 = 5.;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, bubbles_setup_system).add_systems(
@@ -55,9 +55,9 @@ fn bubbles_setup_system(mut commands: Commands, mut effects: ResMut<Assets<Effec
     };
 
     let mut size_gradient = Gradient::new();
-    size_gradient.add_key(0.0, Vec2::splat(0.04));
-    size_gradient.add_key(0.3, Vec2::splat(0.04));
-    size_gradient.add_key(1.0, Vec2::splat(0.0));
+    size_gradient.add_key(0.0, Vec2::splat(0.05));
+    size_gradient.add_key(0.3, Vec2::splat(0.05));
+    size_gradient.add_key(1.0, Vec2::splat(0.02));
 
     let update_size = SizeOverLifetimeModifier {
         gradient: size_gradient,

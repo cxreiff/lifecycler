@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
-pub(super) const FISH_MAX: usize = 5;
+pub(super) const FISH_MAX: usize = 16;
 
 #[derive(Component)]
 pub struct Fish;

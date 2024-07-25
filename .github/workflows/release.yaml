@@ -67,10 +67,13 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
+            name: linux
           - target: x86_64-apple-darwin
             os: macos-latest
+            name: macos
           - target: x86_64-pc-windows-msvc
             os: windows-latest
+            name: windows
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -111,8 +114,8 @@ jobs:
       - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
-          path: "${{ env.PACKAGE_NAME }}-${{ matrix.target }}.zip"
+          name: ${{ env.PACKAGE_NAME }}-${{ matrix.name }}
+          path: "${{ env.PACKAGE_NAME }}-${{ matrix.name }}.zip"
 
   # Get itch.io target from env, because the `env` context can't be used in the `if:` condition of a job.
   # See: https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
@@ -151,7 +154,7 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
         run: |
-          for channel in $(ls tmp); do
+          for channel in $(ls bin); do
             ./butler push \
               --fix-permissions \
               --userversion='${{ env.VERSION }}' \
