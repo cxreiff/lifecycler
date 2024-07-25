@@ -113,7 +113,7 @@ jobs:
         with:
           name: binary
           path: |
-            ${{ env.PACKAGE_NAME }}
+            ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
 
   # Get itch.io target from env, because the `env` context can't be used in the `if:` condition of a job.
   # See: https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
@@ -139,8 +139,8 @@ jobs:
       - name: download all packages
         uses: actions/download-artifact@v4
         with:
-          pattern: package-*
-          path: tmp
+          pattern: "*.zip"
+          path: "./"
 
       - name: install butler
         run: |
