@@ -106,14 +106,13 @@ jobs:
           ref: refs/tags/${{ env.VERSION }}
 
       - name: test ls
-        run: ls; ls **
+        run: ls
       
       - name: upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: binary
-          path: |
-            ${{ env.PACKAGE_NAME }}
+          name: ${{ env.PACKAGE_NAME }}-${{ matrix.target }}
+          path: "${{ env.PACKAGE_NAME }}-${{ matrix.target }}.zip"
 
   # Get itch.io target from env, because the `env` context can't be used in the `if:` condition of a job.
   # See: https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
@@ -138,9 +137,6 @@ jobs:
     steps:
       - name: download all packages
         uses: actions/download-artifact@v4
-        with:
-          pattern: package-*
-          path: tmp
 
       - name: install butler
         run: |
@@ -157,7 +153,7 @@ jobs:
             ./butler push \
               --fix-permissions \
               --userversion='${{ env.VERSION }}' \
-              tmp/"${channel}"/* \
+              bin/"${channel}"/* \
               '${{ env.ITCH_TARGET }}':"${channel#package-}"
           done
 

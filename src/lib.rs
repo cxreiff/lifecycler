@@ -11,6 +11,7 @@ use bevy_ratatui_render::RatatuiRenderPlugin;
 mod camera;
 mod draw;
 mod fish;
+mod general;
 mod input;
 mod pellets;
 mod tank;
@@ -45,6 +46,7 @@ impl Plugin for AppPlugin {
             camera::plugin,
             draw::plugin,
             fish::plugin,
+            general::plugin,
             input::plugin,
             pellets::plugin,
             tank::plugin,
