@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+pub use shared::Fish;
+
 mod behavior;
 mod shared;
 mod spawning;

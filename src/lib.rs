@@ -5,9 +5,11 @@ use bevy::{
     window::ExitCondition,
 };
 use bevy_atmosphere::plugin::AtmospherePlugin;
+use bevy_hanabi::HanabiPlugin;
 use bevy_ratatui::RatatuiPlugins;
 use bevy_ratatui_render::RatatuiRenderPlugin;
 
+mod bubbles;
 mod camera;
 mod draw;
 mod fish;
@@ -38,11 +40,13 @@ impl Plugin for AppPlugin {
             RatatuiRenderPlugin::new("main", (512, 512)),
             // RatatuiRenderPlugin::new("main", (512, 512)).disable(),
             AtmospherePlugin,
+            HanabiPlugin,
         ))
         .insert_resource(Msaa::Off)
         .init_resource::<Flags>();
 
         app.add_plugins((
+            bubbles::plugin,
             camera::plugin,
             draw::plugin,
             fish::plugin,

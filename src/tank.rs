@@ -19,4 +19,11 @@ fn setup_tank_system(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
     ));
+    commands.spawn((SceneBundle {
+        transform: Transform::from_scale(Vec3::new(1.8, 1., 0.5))
+            .with_translation(Vec3::new(0., -1.75, 0.))
+            .with_rotation(Quat::from_rotation_x(0.)),
+        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("gravel.glb")),
+        ..default()
+    },));
 }

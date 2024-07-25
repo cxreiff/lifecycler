@@ -137,6 +137,8 @@ jobs:
     steps:
       - name: download all packages
         uses: actions/download-artifact@v4
+        with:
+          path: bin
 
       - name: install butler
         run: |

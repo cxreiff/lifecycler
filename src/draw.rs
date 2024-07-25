@@ -44,17 +44,17 @@ fn draw_scene_system(
             }
         }
 
-        let position = Rect::new(
-            (frame.size().width / 2).saturating_sub(15),
-            frame.size().bottom().saturating_sub(2),
-            30,
-            1,
-        );
-        let keys_info = Text::raw("[q to quit][? for information]")
-            .alignment(Alignment::Center)
-            .bg(ratatui::style::Color::Black);
+        // let position = Rect::new(
+        //     (frame.size().width / 2).saturating_sub(15),
+        //     frame.size().bottom().saturating_sub(2),
+        //     30,
+        //     1,
+        // );
+        // let keys_info = Text::raw("[q to quit][? for information]")
+        //     .alignment(Alignment::Center)
+        //     .bg(ratatui::style::Color::Black);
 
-        frame.render_widget(keys_info, position);
+        // frame.render_widget(keys_info, position);
     })?;
 
     Ok(())

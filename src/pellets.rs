@@ -98,9 +98,9 @@ fn create_pellets_system(
                     camera_transform,
                 ) {
                     let fall_target = Vec3::new(
-                        transform.translation.x.clamp(-1.94, 1.94),
-                        -1.8,
-                        pellet_rng.next_u32() as f32 / u32::MAX as f32 * 0.5 - 0.4,
+                        transform.translation.x.clamp(-1.75, 1.75),
+                        -1.7,
+                        pellet_rng.next_u32() as f32 / u32::MAX as f32 * 0.75 - 0.25,
                     );
                     commands.spawn((
                         Pellet,
@@ -133,7 +133,7 @@ fn move_pellets_system(
 
         pellet_transform.translation.x +=
             (time.elapsed_seconds() + (fall_target.x * 16.) % 3.).sin() / 800.;
-        pellet_transform.translation.x = pellet_transform.translation.x.clamp(-1.94, 1.94);
+        pellet_transform.translation.x = pellet_transform.translation.x.clamp(-1.8, 1.8);
 
         if pellet_transform.translation.distance(*fall_target) < 0.003 {
             let mut entity = commands.entity(id);
@@ -173,7 +173,7 @@ fn terminal_coords_to_world_transform(
     let x = render_column / block_width.min(block_height) as f32 * 2. - 1.;
     let y = render_row / block_height.min(block_width) as f32 * 2. - 1.;
 
-    if x.abs() > 0.94 || y > 0.9 {
+    if x.abs() > 0.9 || y > 0.9 {
         return None;
     }
 
