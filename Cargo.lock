@@ -376,7 +376,6 @@ version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e938630e9f472b1899c78ef84aa907081b23bad8333140e2295c620485b6ee7"
 dependencies = [
- "bevy_dylib",
  "bevy_internal",
 ]
 
@@ -594,34 +593,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_dev_tools"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c9c9bf9f85c93010214544606123790b4128723462a827575ecef917be8562d"
-dependencies = [
- "bevy_app",
- "bevy_asset",
- "bevy_color",
- "bevy_core",
- "bevy_core_pipeline",
- "bevy_diagnostic",
- "bevy_ecs",
- "bevy_gizmos",
- "bevy_hierarchy",
- "bevy_input",
- "bevy_math",
- "bevy_reflect",
- "bevy_render",
- "bevy_state",
- "bevy_text",
- "bevy_time",
- "bevy_transform",
- "bevy_ui",
- "bevy_utils",
- "bevy_window",
-]
-
-[[package]]
 name = "bevy_diagnostic"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -635,15 +606,6 @@ dependencies = [
  "bevy_utils",
  "const-fnv1a-hash",
  "sysinfo",
-]
-
-[[package]]
-name = "bevy_dylib"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8494bf550eb30f570da1563217bcea25530cf29b35d35887ca6c2d76a411d00"
-dependencies = [
- "bevy_internal",
 ]
 
 [[package]]
@@ -836,7 +798,6 @@ dependencies = [
  "bevy_core",
  "bevy_core_pipeline",
  "bevy_derive",
- "bevy_dev_tools",
  "bevy_diagnostic",
  "bevy_ecs",
  "bevy_gilrs",
@@ -4641,9 +4602,9 @@ checksum = "852e951cb7832cb45cb1169900d19760cfa39b82bc0ea9c0e5a14ae88411c98b"
 
 [[package]]
 name = "version_check"
-version = "0.9.4"
+version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "walkdir"

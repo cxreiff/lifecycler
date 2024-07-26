@@ -1,6 +1,6 @@
 [package]
 name = "lifecycler"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 license = "MIT OR Apache-2.0 OR CC0-1.0"
 
@@ -19,10 +19,7 @@ ratatui = "0.27.0"
 default = [
     "dev_native",
 ]
-dev = [
-    "bevy/dynamic_linking",
-    "bevy/bevy_dev_tools",
-]
+dev = []
 dev_native = [
     "dev",
     "bevy/file_watcher",

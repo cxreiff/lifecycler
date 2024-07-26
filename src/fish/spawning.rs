@@ -6,6 +6,7 @@ use rand::{RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
 use super::behavior::FishBehavior;
+use super::lifecycle::{FishMortality, FishSkeleton};
 use super::shared::{Fish, FishRng, FISH_MAX};
 
 pub(super) fn plugin(app: &mut App) {
@@ -65,20 +66,22 @@ fn spawn_fish_system(
     fish_materials: Res<FishMaterials>,
     mut fish_rng: ResMut<FishRng>,
     fishes: Query<Entity, With<Fish>>,
+    skeletons: Query<Entity, With<FishSkeleton>>,
 ) {
     fish_timer.tick(time.delta());
 
-    let fish_count = fishes.iter().len();
+    let fish_count = fishes.iter().len() + skeletons.iter().len();
 
     if fish_timer.just_finished() && fish_count < FISH_MAX {
-        let mut transform = Transform::default()
+        let mut transform = Transform::from_xyz(0., -1.65, 0.)
             .with_rotation(Quat::from_euler(EulerRot::XYZ, PI / 2., PI, 0.))
-            .with_scale(Vec3::new(0.2, 0.1, 0.15));
-        transform.translation += Cuboid::new(1.5, 1.5, 0.8).sample_interior(&mut fish_rng.0);
+            .with_scale(Vec3::new(0.1, 0.1, 0.1));
+        transform.translation += Cuboid::new(1.5, 0.01, 0.8).sample_interior(&mut fish_rng.0);
 
         commands.spawn((
             Fish,
             FishBehavior::default(),
+            FishMortality::default(),
             PbrBundle {
                 transform,
                 mesh: fish_mesh.clone(),

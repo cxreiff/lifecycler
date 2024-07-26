@@ -30,6 +30,14 @@ fn setup_tank_system(
         ..default()
     });
 
+    commands.spawn(SceneBundle {
+        transform: Transform::from_scale(Vec3::new(2., 0.6, 2.0))
+            .with_translation(Vec3::new(0., 0.0, 0.))
+            .with_rotation(Quat::from_rotation_x(PI / 2.)),
+        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("base.glb")),
+        ..default()
+    });
+
     let coral_bundle = PbrBundle {
         transform: Transform::IDENTITY
             .with_scale(Vec3::splat(0.35))
@@ -98,7 +106,7 @@ fn setup_tank_system(
     commands.spawn(rock_bundle_2);
 
     let mut rock_bundle_2 = rock_bundle.clone();
-    rock_bundle_2.transform = Transform::from_xyz(1.6, -1.8, -0.4)
+    rock_bundle_2.transform = Transform::from_xyz(1.6, -1.8, -0.3)
         .with_scale(Vec3::splat(0.2))
         .with_rotation(Quat::from_euler(
             EulerRot::XYZ,
@@ -109,7 +117,7 @@ fn setup_tank_system(
     commands.spawn(rock_bundle_2);
 
     let mut rock_bundle_3 = rock_bundle.clone();
-    rock_bundle_3.transform = Transform::from_xyz(-0.6, -1.8, -0.5)
+    rock_bundle_3.transform = Transform::from_xyz(-0.6, -1.8, -0.4)
         .with_scale(Vec3::splat(0.15))
         .with_rotation(Quat::from_euler(
             EulerRot::XYZ,
@@ -120,7 +128,7 @@ fn setup_tank_system(
     commands.spawn(rock_bundle_3);
 
     let mut rock_bundle_4 = rock_bundle.clone();
-    rock_bundle_4.transform = Transform::from_xyz(-0.3, -1.8, -0.5)
+    rock_bundle_4.transform = Transform::from_xyz(-0.3, -1.8, -0.4)
         .with_scale(Vec3::splat(0.1))
         .with_rotation(Quat::from_euler(
             EulerRot::XYZ,

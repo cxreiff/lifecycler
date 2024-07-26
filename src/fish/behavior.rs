@@ -9,7 +9,8 @@ use rand_chacha::ChaCha8Rng;
 use crate::general::AttemptDespawn;
 use crate::pellets::Pellet;
 
-use super::shared::FishRng;
+use super::lifecycle::FishMortality;
+use super::shared::{FishRng, FISH_SATIATION_MAX};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
@@ -23,6 +24,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 pub enum FishBehaviorVariant {
+    Debut,
     Idle,
     SwimRight,
     SwimLeft,
@@ -40,7 +42,7 @@ impl Default for FishBehavior {
     fn default() -> Self {
         Self {
             timer: Timer::from_seconds(5., TimerMode::Repeating),
-            variant: FishBehaviorVariant::Idle,
+            variant: FishBehaviorVariant::Debut,
         }
     }
 }
@@ -48,13 +50,19 @@ impl Default for FishBehavior {
 pub struct FishOperations<'a> {
     transform: &'a mut Transform,
     behavior: &'a mut FishBehavior,
+    mortality: &'a mut FishMortality,
 }
 
 impl<'a> FishOperations<'a> {
-    fn new(transform: &'a mut Transform, behavior: &'a mut FishBehavior) -> Self {
+    fn new(
+        transform: &'a mut Transform,
+        behavior: &'a mut FishBehavior,
+        mortality: &'a mut FishMortality,
+    ) -> Self {
         Self {
             transform,
             behavior,
+            mortality,
         }
     }
 
@@ -91,6 +99,14 @@ impl<'a> FishOperations<'a> {
     fn start_seek_pellet(&mut self, pellet_id: Entity) {
         self.behavior.variant = FishBehaviorVariant::SeekPellet(pellet_id);
         self.behavior.timer.reset();
+    }
+
+    fn behavior_debut(&mut self, time: &Time, rng: &mut FishRng) {
+        self.transform.translation.y += time.delta_seconds() / 10.;
+
+        if self.transform.translation.y > -0.5 {
+            self.start_seek_point(rng)
+        }
     }
 
     fn behavior_idle(&mut self, time: &Time) {
@@ -132,6 +148,11 @@ impl<'a> FishOperations<'a> {
         commands: &mut Commands,
     ) {
         if let Ok((pellet_entity, pellet_transform)) = pellet {
+            if self.mortality.satiation == FISH_SATIATION_MAX {
+                self.start_seek_point(rng);
+                return;
+            }
+
             if self.transform.translation.x < pellet_transform.translation.x {
                 self.face_right();
             } else {
@@ -150,6 +171,7 @@ impl<'a> FishOperations<'a> {
                 < 0.17
             {
                 if let Some(mut entity) = commands.get_entity(pellet_entity) {
+                    self.mortality.satiation += 1;
                     entity.insert(AttemptDespawn);
                 }
             }
@@ -181,14 +203,15 @@ impl<'a> FishOperations<'a> {
 fn fish_behavior_system(
     mut commands: Commands,
     time: Res<Time>,
-    mut fishes: Query<(&mut Transform, &mut FishBehavior)>,
+    mut fishes: Query<(&mut Transform, &mut FishBehavior, &mut FishMortality)>,
     pellets: Query<(Entity, &mut Transform), (With<Pellet>, Without<FishBehavior>)>,
     mut rng: ResMut<FishRng>,
 ) {
-    for (mut transform, mut behavior) in fishes.iter_mut() {
-        let mut fish = FishOperations::new(&mut transform, &mut behavior);
+    for (mut transform, mut behavior, mut mortality) in fishes.iter_mut() {
+        let mut fish = FishOperations::new(&mut transform, &mut behavior, &mut mortality);
 
         match fish.behavior.variant {
+            FishBehaviorVariant::Debut => fish.behavior_debut(&time, &mut rng),
             FishBehaviorVariant::Idle => fish.behavior_idle(&time),
             FishBehaviorVariant::SwimRight => fish.behavior_swim_right(&time),
             FishBehaviorVariant::SwimLeft => fish.behavior_swim_left(&time),
@@ -204,10 +227,10 @@ fn fish_behavior_system(
 
 fn fish_behavior_change_system(
     time: Res<Time>,
-    mut fishes: Query<(&mut Transform, &mut FishBehavior)>,
+    mut fishes: Query<(&mut Transform, &mut FishBehavior, &mut FishMortality)>,
 ) {
-    for (mut transform, mut behavior) in fishes.iter_mut() {
-        let mut fish = FishOperations::new(&mut transform, &mut behavior);
+    for (mut transform, mut behavior, mut mortality) in fishes.iter_mut() {
+        let mut fish = FishOperations::new(&mut transform, &mut behavior, &mut mortality);
 
         fish.behavior.timer.tick(time.delta());
 
@@ -229,11 +252,11 @@ fn fish_behavior_change_system(
 }
 
 fn fish_pellet_detection_system(
-    mut fishes: Query<(&mut Transform, &mut FishBehavior)>,
+    mut fishes: Query<(&mut Transform, &mut FishBehavior, &mut FishMortality)>,
     pellets: Query<(Entity, &Transform), (With<Pellet>, Without<FishBehavior>)>,
 ) {
-    for (mut transform, mut behavior) in fishes.iter_mut() {
-        let mut fish = FishOperations::new(&mut transform, &mut behavior);
+    for (mut transform, mut behavior, mut mortality) in fishes.iter_mut() {
+        let mut fish = FishOperations::new(&mut transform, &mut behavior, &mut mortality);
 
         let (closest_pellet_id, closest_dist) = pellets.iter().fold(
             (None, f32::MAX),

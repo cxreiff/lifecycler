@@ -83,7 +83,7 @@ fn bubbles_setup_system(mut commands: Commands, mut effects: ResMut<Assets<Effec
         GravelBubbler,
         ParticleEffectBundle {
             effect: ParticleEffect::new(bubbles_effect.clone()),
-            transform: Transform::from_xyz(0., -1.7, 0.),
+            transform: Transform::from_xyz(0., -1.7, 0.15),
             ..default()
         },
     ));
