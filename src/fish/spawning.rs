@@ -42,7 +42,7 @@ fn setup_fish_system(
         .map(|_| {
             let base_color =
                 Color::hsl(((seeded_rng.next_u32() % 160 + 200) % 360) as f32, 0.4, 0.3);
-            let emissive = base_color.to_linear() * 0.1;
+            let emissive = base_color.to_linear() * 0.2;
 
             materials.add(StandardMaterial {
                 base_color,

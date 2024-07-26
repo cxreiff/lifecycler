@@ -77,8 +77,8 @@ fn age_the_living_system(
         transform.scale = Vec3::new(
             0.1 + 0.15 * (mortality.bulk as f32 / FISH_BULK_MAX as f32),
             0.1,
-            0.05 + 0.15 * (mortality.bulk as f32 / FISH_BULK_MAX as f32)
-                + 0.05 * (mortality.satiation as f32 / FISH_SATIATION_MAX as f32).min(1.),
+            0.08 + 0.14 * (mortality.bulk as f32 / FISH_BULK_MAX as f32)
+                + 0.03 * (mortality.satiation as f32 / FISH_SATIATION_MAX as f32).min(1.),
         );
     }
 }

@@ -1,12 +1,9 @@
 use bevy::prelude::*;
-use bevy_ratatui::{event::MouseEvent, terminal::RatatuiContext};
-use crossterm::event::{MouseButton, MouseEventKind};
 use rand::seq::SliceRandom;
 use rand_chacha::{
     rand_core::{RngCore, SeedableRng},
     ChaCha8Rng,
 };
-use ratatui::layout::Rect;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup_pellets_system)
@@ -18,7 +15,8 @@ pub(super) fn plugin(app: &mut App) {
                 perish_perishables_system,
             ),
         )
-        .init_resource::<PelletThreshold>();
+        .init_resource::<PelletThreshold>()
+        .add_event::<PelletEvent>();
 }
 
 #[derive(Component)]
@@ -41,6 +39,9 @@ pub struct PelletThreshold(u32);
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Perishable(Timer);
+
+#[derive(Event, Deref)]
+pub struct PelletEvent(pub Transform);
 
 fn setup_pellets_system(
     mut commands: Commands,
@@ -69,48 +70,27 @@ fn setup_pellets_system(
 
 fn create_pellets_system(
     mut commands: Commands,
-    mut events: EventReader<MouseEvent>,
-    ratatui: Res<RatatuiContext>,
+    mut pellet_events: EventReader<PelletEvent>,
     mut pellet_rng: ResMut<PelletRng>,
     pellet_mesh: Res<PelletMesh>,
     pellet_materials: Res<PelletMaterials>,
-    mut pellet_threshold: ResMut<PelletThreshold>,
-    camera: Query<&Transform, With<Camera>>,
 ) {
-    for event in events.read() {
-        let crossterm::event::MouseEvent {
-            kind, column, row, ..
-        } = event.0;
-        if let MouseEventKind::Drag(MouseButton::Left) | MouseEventKind::Down(MouseButton::Left) =
-            kind
-        {
-            if **pellet_threshold == 0 || kind == MouseEventKind::Down(MouseButton::Left) {
-                let size = ratatui.size().unwrap();
-                let camera_transform = camera.single();
-                if let Some(transform) =
-                    terminal_coords_to_world_transform(column, row, size, camera_transform)
-                {
-                    let fall_target = Vec3::new(
-                        transform.translation.x.clamp(-1.75, 1.75),
-                        -1.7,
-                        pellet_rng.next_u32() as f32 / u32::MAX as f32 * 0.75 - 0.25,
-                    );
-                    commands.spawn((
-                        Pellet,
-                        PelletFalling(fall_target),
-                        PbrBundle {
-                            transform,
-                            mesh: pellet_mesh.clone(),
-                            material: pellet_materials.choose(&mut pellet_rng.0).unwrap().clone(),
-                            ..default()
-                        },
-                    ));
-                }
-                **pellet_threshold = 1;
-            } else {
-                **pellet_threshold -= 1;
-            }
-        }
+    for mouse_position in pellet_events.read() {
+        let fall_target = Vec3::new(
+            mouse_position.translation.x.clamp(-1.75, 1.75),
+            -1.7,
+            pellet_rng.next_u32() as f32 / u32::MAX as f32 * 0.75 - 0.25,
+        );
+        commands.spawn((
+            Pellet,
+            PelletFalling(fall_target),
+            PbrBundle {
+                transform: **mouse_position,
+                mesh: pellet_mesh.clone(),
+                material: pellet_materials.choose(&mut pellet_rng.0).unwrap().clone(),
+                ..default()
+            },
+        ));
     }
 }
 
@@ -148,29 +128,4 @@ fn perish_perishables_system(
             commands.entity(id).despawn();
         }
     }
-}
-
-fn terminal_coords_to_world_transform(
-    column: u16,
-    row: u16,
-    terminal_size: Rect,
-    camera: &Transform,
-) -> Option<Transform> {
-    let block_width = terminal_size.width;
-    let block_height = terminal_size.height * 2;
-
-    let render_column = column as f32 - block_width.saturating_sub(block_height) as f32 / 2.;
-    let render_row = (row as f32 - block_height.saturating_sub(block_width) as f32 / 4.) * 2.;
-
-    let x = render_column / block_width.min(block_height) as f32 * 2. - 1.;
-    let y = render_row / block_height.min(block_width) as f32 * 2. - 1.;
-
-    if x.abs() > 0.9 || y > 0.9 {
-        return None;
-    }
-
-    let mut world_coords = *camera * Vec3::new(x * 2.05, -y * 2. + 0.02, 0.);
-    world_coords.z = 0.;
-
-    Some(Transform::from_translation(world_coords))
 }
