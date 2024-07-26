@@ -108,8 +108,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: refs/tags/${{ env.VERSION }}
 
-      - name: test ls
-        run: ls
+      - name: rename artifact
+        run: mv "${{ env.PACKAGE_NAME }}-${{ matrix.target }}.zip" "${{ env.PACKAGE_NAME }}-${{ matrix.name }}.zip"
       
       - name: upload artifact
         uses: actions/upload-artifact@v4
