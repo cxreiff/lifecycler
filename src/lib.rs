@@ -5,6 +5,7 @@ use bevy::{
     window::ExitCondition,
 };
 use bevy_atmosphere::plugin::AtmospherePlugin;
+use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_hanabi::HanabiPlugin;
 use bevy_ratatui::RatatuiPlugins;
 use bevy_ratatui_render::RatatuiRenderPlugin;
@@ -30,6 +31,7 @@ impl Plugin for AppPlugin {
                     exit_condition: ExitCondition::DontExit,
                     close_when_requested: false,
                 }),
+            EmbeddedAssetPlugin::default(),
             // DefaultPlugins,
             ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 90.)),
             FrameTimeDiagnosticsPlugin,

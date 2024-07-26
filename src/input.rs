@@ -20,7 +20,6 @@ pub fn handle_input_system(
                     exit.send_default();
                 }
 
-                #[cfg(feature = "dev")]
                 KeyCode::Char('d') => {
                     flags.debug = !flags.debug;
                 }

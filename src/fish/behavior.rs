@@ -148,7 +148,7 @@ impl<'a> FishOperations<'a> {
         commands: &mut Commands,
     ) {
         if let Ok((pellet_entity, pellet_transform)) = pellet {
-            if self.mortality.satiation == FISH_SATIATION_MAX {
+            if self.mortality.satiation >= FISH_SATIATION_MAX {
                 self.start_seek_point(rng);
                 return;
             }
@@ -171,7 +171,7 @@ impl<'a> FishOperations<'a> {
                 < 0.17
             {
                 if let Some(mut entity) = commands.get_entity(pellet_entity) {
-                    self.mortality.satiation += 1;
+                    self.mortality.satiation += 10;
                     entity.insert(AttemptDespawn);
                 }
             }

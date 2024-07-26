@@ -7,7 +7,7 @@ use rand_chacha::ChaCha8Rng;
 
 use super::behavior::FishBehavior;
 use super::lifecycle::{FishMortality, FishSkeleton};
-use super::shared::{Fish, FishRng, FISH_MAX};
+use super::shared::{Fish, FishRng, FISH_MAX, FISH_SPAWN_INTERVAL_SECONDS};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup_fish_system)
@@ -33,7 +33,7 @@ fn setup_fish_system(
             mesh: 0,
             primitive: 0,
         })
-        .from_asset("fish.glb"),
+        .from_asset("embedded://fish.glb"),
     );
     commands.insert_resource(FishMesh(fish_mesh));
 
@@ -54,7 +54,7 @@ fn setup_fish_system(
     commands.insert_resource(FishMaterials(fish_materials));
     commands.insert_resource(FishRng(seeded_rng));
 
-    let fish_timer = Timer::from_seconds(0.5, TimerMode::Repeating);
+    let fish_timer = Timer::from_seconds(FISH_SPAWN_INTERVAL_SECONDS, TimerMode::Repeating);
     commands.insert_resource(FishTimer(fish_timer));
 }
 
@@ -81,7 +81,7 @@ fn spawn_fish_system(
         commands.spawn((
             Fish,
             FishBehavior::default(),
-            FishMortality::default(),
+            FishMortality::new(&mut fish_rng),
             PbrBundle {
                 transform,
                 mesh: fish_mesh.clone(),
