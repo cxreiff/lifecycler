@@ -12,8 +12,8 @@ use bevy_ratatui_render::RatatuiRenderPlugin;
 
 mod bubbles;
 mod camera;
+mod creatures;
 mod draw;
-mod fish;
 mod general;
 mod input;
 mod pellets;
@@ -32,7 +32,6 @@ impl Plugin for AppPlugin {
                     close_when_requested: false,
                 }),
             EmbeddedAssetPlugin::default(),
-            // DefaultPlugins,
             ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 90.)),
             FrameTimeDiagnosticsPlugin,
             RatatuiPlugins {
@@ -40,7 +39,6 @@ impl Plugin for AppPlugin {
                 ..default()
             },
             RatatuiRenderPlugin::new("main", (512, 512)),
-            // RatatuiRenderPlugin::new("main", (512, 512)).disable(),
             AtmospherePlugin,
             HanabiPlugin,
         ))
@@ -51,7 +49,7 @@ impl Plugin for AppPlugin {
             bubbles::plugin,
             camera::plugin,
             draw::plugin,
-            fish::plugin,
+            creatures::plugin,
             general::plugin,
             input::plugin,
             pellets::plugin,

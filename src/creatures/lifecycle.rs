@@ -3,8 +3,11 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use rand::RngCore;
 
-use super::shared::{
-    FishRng, FISH_AGING_INTERVAL_SECONDS, FISH_AVERAGE_LONGEVITY, FISH_BULK_MAX, FISH_SATIATION_MAX,
+use super::{
+    behavior::CreatureRng, fish_behavior::{
+        FISH_AGING_INTERVAL_SECONDS, FISH_AVERAGE_LONGEVITY, FISH_BULK_MAX,
+        FISH_SATIATION_MAX,
+    }, fish_systems::FishSpawnEvent
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -22,7 +25,7 @@ pub struct FishMortality {
 }
 
 impl FishMortality {
-    pub fn new(rng: &mut FishRng) -> Self {
+    pub fn new(rng: &mut CreatureRng) -> Self {
         Self {
             next_age_timer: Timer::from_seconds(FISH_AGING_INTERVAL_SECONDS, TimerMode::Repeating),
             age: 0,
@@ -87,12 +90,14 @@ fn fish_skeleton_system(
     time: Res<Time>,
     mut commands: Commands,
     mut skeleton_query: Query<(Entity, &mut Transform), With<FishSkeleton>>,
+    mut spawn_events: EventWriter<FishSpawnEvent>,
 ) {
     for (entity, mut transform) in skeleton_query.iter_mut() {
         transform.translation.y -= time.delta_seconds() / 10.;
 
-        if transform.translation.y < -2. {
+        if transform.translation.y < -1.9 {
             commands.entity(entity).despawn();
+            spawn_events.send(FishSpawnEvent(transform.translation));
         }
     }
 }

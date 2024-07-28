@@ -9,7 +9,7 @@ const LIGHT_COLOR_DAYTIME: Color = Color::hsl(190., 0.5, 1.0);
 const LIGHT_COLOR_NIGHTTIME: Color = Color::hsl(36., 0.2, 0.5);
 
 const LIGHT_TRANSLATION_DAYTIME: Vec3 = Vec3::new(2., 3., 5.);
-const LIGHT_TRANSLATION_NIGHTTIME: Vec3 = Vec3::new(0., -3., 5.);
+const LIGHT_TRANSLATION_NIGHTTIME: Vec3 = Vec3::new(0., -2.5, 5.);
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup_camera_system)

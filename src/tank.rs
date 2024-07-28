@@ -54,7 +54,7 @@ fn setup_tank_system(
     let mut coral_bundle_1 = coral_bundle.clone();
     coral_bundle_1.transform = coral_bundle_1
         .transform
-        .with_translation(Vec3::new(-1.2, -1.8, 0.));
+        .with_translation(Vec3::new(-1.24, -1.8, 0.));
     coral_bundle_1.mesh = asset_server.load(
         (GltfAssetLabel::Primitive {
             mesh: 0,

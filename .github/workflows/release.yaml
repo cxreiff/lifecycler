@@ -99,23 +99,23 @@ jobs:
           # (optional) On which platform to distribute the `.tar.gz` file.
           # [default value: unix]
           # [possible values: all, unix, windows, none]
-          tar: none
+          tar: all
           # (optional) On which platform to distribute the `.zip` file.
           # [default value: windows]
           # [possible values: all, unix, windows, none]
-          zip: all
+          zip: none
           # (required) GitHub token for uploading assets to GitHub Releases.
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: refs/tags/${{ env.VERSION }}
 
       - name: rename artifact
-        run: mv "${{ env.PACKAGE_NAME }}-${{ matrix.target }}.zip" "${{ env.PACKAGE_NAME }}-${{ matrix.name }}.zip"
+        run: mv "${{ env.PACKAGE_NAME }}-${{ matrix.target }}.tar.gz" "${{ env.PACKAGE_NAME }}-${{ matrix.name }}.tar.gz"
       
       - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }}-${{ matrix.name }}
-          path: "${{ env.PACKAGE_NAME }}-${{ matrix.name }}.zip"
+          path: "${{ env.PACKAGE_NAME }}-${{ matrix.name }}.tar.gz"
 
   # Get itch.io target from env, because the `env` context can't be used in the `if:` condition of a job.
   # See: https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
