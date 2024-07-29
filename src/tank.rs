@@ -47,7 +47,7 @@ fn setup_tank_system(
                 1. * PI / 2.,
                 0.,
             )),
-        material: materials.add(StandardMaterial::from_color(Color::srgb(0.2, 0.5, 0.4))),
+        material: materials.add(StandardMaterial::from_color(Color::srgb(0.2, 0.6, 0.5))),
         ..default()
     };
 

@@ -129,6 +129,6 @@ impl<'a> CreatureOperations for FishOperations<'a> {
     }
 
     fn valid_point_buffer() -> Vec3 {
-        Vec3::new(0.2, 0.3, 0.)
+        Vec3::new(0.2, 0.3, 0.1)
     }
 }

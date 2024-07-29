@@ -21,16 +21,16 @@ impl<'a> SnailOperations<'a> {
 }
 
 impl<'a> CreatureOperations for SnailOperations<'a> {
-    fn behavior_debut(&mut self, time: &Time, _rng: &mut CreatureRng) {
-        self.transform.translation.x += time.delta_seconds() * Self::base_speed();
-
-        if self.transform.translation.x > -1. {
+    fn behavior_debut(&mut self, _time: &Time, _rng: &mut CreatureRng) {
+        if self.transform.translation.x < 0. {
             self.start_swim_right();
+        } else {
+            self.start_swim_left();
         }
     }
 
     fn behavior_idle(&mut self, time: &Time) {
-        self.transform.translation.y += time.elapsed_seconds().sin() / 1000.;
+        self.transform.translation.z += time.elapsed_seconds().sin() / 10_000.;
     }
 
     fn behavior_seek_pellet(
@@ -69,15 +69,11 @@ impl<'a> CreatureOperations for SnailOperations<'a> {
     }
 
     fn face_right(&mut self) {
-        *self.transform =
-            self.transform
-                .with_rotation(Quat::from_euler(EulerRot::XYZ, 0., 3. * PI / 2., 0.));
+        *self.transform = self.transform.with_rotation(Quat::IDENTITY);
     }
 
     fn face_left(&mut self) {
-        *self.transform =
-            self.transform
-                .with_rotation(Quat::from_euler(EulerRot::XYZ, 0., PI / 2., 0.));
+        *self.transform = self.transform.with_rotation(Quat::from_rotation_y(PI));
     }
 
     fn rank_pellet(&mut self, pellet_transform: &Transform) -> f32 {

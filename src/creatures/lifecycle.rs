@@ -4,10 +4,11 @@ use bevy::prelude::*;
 use rand::RngCore;
 
 use super::{
-    behavior::CreatureRng, fish_behavior::{
-        FISH_AGING_INTERVAL_SECONDS, FISH_AVERAGE_LONGEVITY, FISH_BULK_MAX,
-        FISH_SATIATION_MAX,
-    }, fish_systems::FishSpawnEvent
+    behavior::CreatureRng,
+    fish_behavior::{
+        FISH_AGING_INTERVAL_SECONDS, FISH_AVERAGE_LONGEVITY, FISH_BULK_MAX, FISH_SATIATION_MAX,
+    },
+    fish_systems::FishSpawnEvent,
 };
 
 pub(super) fn plugin(app: &mut App) {

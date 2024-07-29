@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, time::Duration};
+use std::time::Duration;
 
 use bevy::{prelude::*, time::common_conditions::on_timer};
 
@@ -29,8 +29,8 @@ pub struct Snail;
 #[derive(Resource, Deref)]
 pub struct SnailScene(Handle<Scene>);
 
-#[derive(Event, Deref)]
-pub struct SnailSpawnEvent(pub Vec3);
+#[derive(Event)]
+pub struct SnailSpawnEvent(pub Vec3, pub f32);
 
 fn setup_snails_system(
     mut commands: Commands,
@@ -40,7 +40,8 @@ fn setup_snails_system(
     let snail = asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://snail.glb"));
     commands.insert_resource(SnailScene(snail));
 
-    spawn_events.send(SnailSpawnEvent(Vec3::new(-1.4, -1.7, 0.4)));
+    spawn_events.send(SnailSpawnEvent(Vec3::new(-1.4, -1.7, 0.4), 0.1));
+    spawn_events.send(SnailSpawnEvent(Vec3::new(1.4, -1.7, -0.1), 0.07));
 }
 
 fn spawn_snails_system(
@@ -48,14 +49,16 @@ fn spawn_snails_system(
     mut spawn_events: EventReader<SnailSpawnEvent>,
     fish_scene: Res<SnailScene>,
 ) {
-    for spawn_location in spawn_events.read() {
-        let transform = Transform::from_translation(**spawn_location)
-            .with_rotation(Quat::from_euler(EulerRot::XYZ, 0., 3. * PI / 2., 0.))
-            .with_scale(Vec3::new(0.09, 0.09, 0.09));
+    for SnailSpawnEvent(location, size) in spawn_events.read() {
+        let transform = Transform::from_translation(*location).with_scale(Vec3::splat(*size));
+        let mut behavior = CreatureBehavior::default();
+        behavior
+            .timer
+            .set_duration(behavior.timer.duration() - Duration::from_secs((size * 10.) as u64 % 2));
 
         commands.spawn((
             Snail,
-            CreatureBehavior::default(),
+            behavior,
             SceneBundle {
                 transform,
                 scene: fish_scene.clone(),
@@ -85,9 +88,10 @@ fn snails_behavior_system(
 fn snails_behavior_change_system(
     time: Res<Time>,
     mut snails: Query<(&mut Transform, &mut CreatureBehavior), With<Snail>>,
+    mut rng: ResMut<CreatureRng>,
 ) {
     for (mut transform, mut behavior) in snails.iter_mut() {
-        SnailOperations::new(&mut transform, &mut behavior).decide_behavior(&time);
+        SnailOperations::new(&mut transform, &mut behavior).decide_behavior(&time, &mut rng);
     }
 }
 

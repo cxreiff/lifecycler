@@ -54,8 +54,8 @@ fn setup_pellets_system(
     let mut seeded_rng = ChaCha8Rng::seed_from_u64(19878367467712);
     let pellet_materials = (0..36)
         .map(|_| {
-            let base_color = Color::hsl((seeded_rng.next_u32() % 100 + 180) as f32, 1.0, 0.5);
-            let emissive = base_color.to_linear() * 10.0;
+            let base_color = Color::hsl((seeded_rng.next_u32() % 360) as f32, 0.8, 0.8);
+            let emissive = base_color.to_linear() * 5.0;
 
             materials.add(StandardMaterial {
                 base_color,

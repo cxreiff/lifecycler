@@ -5,6 +5,8 @@ use rand_chacha::ChaCha8Rng;
 
 use crate::pellets::Pellet;
 
+const BEHAVIOR_INTERVAL_SECONDS: f32 = 8.;
+
 pub(super) fn plugin(app: &mut App) {
     app.init_resource::<CreatureRng>();
 }
@@ -27,7 +29,7 @@ pub struct CreatureBehavior {
 impl Default for CreatureBehavior {
     fn default() -> Self {
         Self {
-            timer: Timer::from_seconds(5., TimerMode::Repeating),
+            timer: Timer::from_seconds(BEHAVIOR_INTERVAL_SECONDS, TimerMode::Repeating),
             variant: CreatureBehaviorVariant::Debut,
         }
     }
@@ -64,16 +66,18 @@ pub trait CreatureOperations {
         self.clamp();
     }
 
-    fn decide_behavior(&mut self, time: &Time) {
+    fn decide_behavior(&mut self, time: &Time, _rng: &mut CreatureRng) {
         self.behavior().timer.tick(time.delta());
 
         if self.behavior().timer.just_finished() {
             match self.behavior().variant {
                 CreatureBehaviorVariant::Idle => {
-                    if self.transform().rotation.y == 0. {
-                        self.start_swim_left();
-                    } else {
+                    let current_y = self.transform().rotation.y;
+                    self.face_left();
+                    if self.transform().rotation.y != current_y {
                         self.start_swim_right();
+                    } else {
+                        self.start_swim_left();
                     }
                 }
                 CreatureBehaviorVariant::SwimRight => self.start_idle(),
@@ -175,22 +179,36 @@ pub trait CreatureOperations {
 
     fn behavior_seek_pellet(
         &mut self,
-        time: &Time,
-        rng: &mut CreatureRng,
-        pellet: Result<(Entity, &Transform), QueryEntityError>,
-        commands: &mut Commands,
-    );
+        _time: &Time,
+        _rng: &mut CreatureRng,
+        _pellet: Result<(Entity, &Transform), QueryEntityError>,
+        _commands: &mut Commands,
+    ) {
+        // optional impl
+    }
 
-    fn face_right(&mut self);
-    fn face_left(&mut self);
+    fn face_right(&mut self) {
+        // optional impl
+    }
+
+    fn face_left(&mut self) {
+        // optional impl
+    }
 
     fn clamp(&mut self) {
         let (min, max) = Self::valid_area();
         self.transform().translation = self.transform().translation.clamp(min, max);
     }
 
-    fn rank_pellet(&mut self, pellet_transform: &Transform) -> f32;
-    fn check_pellet(&mut self, rank: f32) -> bool;
+    fn rank_pellet(&mut self, pellet_transform: &Transform) -> f32 {
+        self.transform()
+            .translation
+            .distance(pellet_transform.translation)
+    }
+
+    fn check_pellet(&mut self, _rank: f32) -> bool {
+        true
+    }
 
     fn behavior(&mut self) -> &mut CreatureBehavior;
     fn transform(&mut self) -> &mut Transform;
@@ -200,11 +218,14 @@ pub trait CreatureOperations {
 
     fn valid_random_point(rng: &mut CreatureRng) -> Vec3 {
         let (min, max) = Self::valid_area();
-        Cuboid::from_corners(min + Self::valid_point_buffer(), max - Self::valid_point_buffer()).sample_interior(&mut rng.0)
+        Cuboid::from_corners(
+            min + Self::valid_point_buffer(),
+            max - Self::valid_point_buffer(),
+        )
+        .sample_interior(&mut rng.0)
     }
 
     fn valid_point_buffer() -> Vec3 {
         Vec3::splat(0.0)
     }
 }
-

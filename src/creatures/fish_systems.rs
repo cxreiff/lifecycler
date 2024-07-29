@@ -58,7 +58,7 @@ fn setup_fish_system(
 
     let fish_materials = (0..36)
         .map(|_| {
-            let base_color = Color::hsl(((rng.next_u32() % 160 + 200) % 360) as f32, 0.4, 0.3);
+            let base_color = Color::hsl(((rng.next_u32() % 180 + 165) % 360) as f32, 0.3, 0.4);
             let emissive = base_color.to_linear() * 0.3;
 
             materials.add(StandardMaterial {
@@ -138,9 +138,11 @@ fn fish_behavior_system(
 fn fish_behavior_change_system(
     time: Res<Time>,
     mut fishes: Query<(&mut Transform, &mut CreatureBehavior, &mut FishMortality), With<Fish>>,
+    mut rng: ResMut<CreatureRng>,
 ) {
     for (mut transform, mut behavior, mut mortality) in fishes.iter_mut() {
-        FishOperations::new(&mut transform, &mut behavior, &mut mortality).decide_behavior(&time);
+        FishOperations::new(&mut transform, &mut behavior, &mut mortality)
+            .decide_behavior(&time, &mut rng);
     }
 }
 
