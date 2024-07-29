@@ -36,9 +36,9 @@ fn draw_scene_system(
                 let _msg = &flags.msg;
                 let position = Rect::new(
                     (frame.size().width / 2 + frame.size().width.min(frame.size().height * 2) / 2)
-                        .saturating_sub(13),
-                    1,
-                    11,
+                        .saturating_sub(11 + if flags.muted { 8 } else { 0 }),
+                    1 + (frame.size().height * 2).saturating_sub(frame.size().width) / 4,
+                    9,
                     1,
                 );
                 let fps = Text::raw(format!(" fps: {value:.0} "))
@@ -48,6 +48,22 @@ fn draw_scene_system(
 
                 frame.render_widget(fps, position);
             }
+        }
+
+        if flags.muted {
+            let position = Rect::new(
+                (frame.size().width / 2 + frame.size().width.min(frame.size().height * 2) / 2)
+                    .saturating_sub(9),
+                1 + (frame.size().height * 2).saturating_sub(frame.size().width) / 4,
+                7,
+                1,
+            );
+            let fps = Text::raw(" muted ")
+                .alignment(Alignment::Center)
+                .bg(ratatui::style::Color::White)
+                .fg(ratatui::style::Color::Black);
+
+            frame.render_widget(fps, position);
         }
     })?;
 

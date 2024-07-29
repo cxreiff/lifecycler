@@ -7,6 +7,8 @@ use crossterm::event::{KeyCode, KeyEventKind, MouseButton, MouseEventKind};
 
 use crate::{camera::DaylightEvent, pellets::PelletEvent, Flags};
 
+const DRAGS_PER_EVENT: u32 = 2;
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(PreUpdate, (handle_keyboard_system, handle_mouse_system))
         .init_resource::<DragThreshold>();
@@ -29,6 +31,10 @@ fn handle_keyboard_system(
 
                 KeyCode::Char('d') => {
                     flags.debug = !flags.debug;
+                }
+
+                KeyCode::Char('m') => {
+                    flags.muted = !flags.muted;
                 }
 
                 _ => {}
@@ -61,7 +67,7 @@ fn handle_mouse_system(
                     {
                         pellet_event.send(PelletEvent(transform));
                     }
-                    **drag_threshold = 1;
+                    **drag_threshold = DRAGS_PER_EVENT;
                 } else {
                     **drag_threshold -= 1;
                 }

@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::{
-    app::ScheduleRunnerPlugin, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*,
+    app::ScheduleRunnerPlugin, diagnostic::FrameTimeDiagnosticsPlugin, log::LogPlugin, prelude::*,
     window::ExitCondition,
 };
 use bevy_atmosphere::plugin::AtmospherePlugin;
@@ -30,6 +30,10 @@ impl Plugin for AppPlugin {
                     primary_window: None,
                     exit_condition: ExitCondition::DontExit,
                     close_when_requested: false,
+                })
+                .set(LogPlugin {
+                    level: bevy::log::Level::ERROR,
+                    ..default()
                 }),
             EmbeddedAssetPlugin::default(),
             ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 90.)),
@@ -61,5 +65,6 @@ impl Plugin for AppPlugin {
 #[derive(Resource, Default)]
 pub struct Flags {
     debug: bool,
+    muted: bool,
     msg: String,
 }

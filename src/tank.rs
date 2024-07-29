@@ -38,6 +38,14 @@ fn setup_tank_system(
         ..default()
     });
 
+    commands.spawn(SceneBundle {
+        transform: Transform::from_scale(Vec3::new(2., 2., 0.6))
+            .with_translation(Vec3::new(0., 0.0, 0.))
+            .with_rotation(Quat::from_rotation_x(0.)),
+        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://frame.glb")),
+        ..default()
+    });
+
     let coral_bundle = PbrBundle {
         transform: Transform::IDENTITY
             .with_scale(Vec3::splat(0.35))

@@ -1,6 +1,6 @@
 use bevy::ecs::query::QueryEntityError;
 use bevy::prelude::*;
-use rand::SeedableRng;
+use rand::{RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
 use crate::pellets::Pellet;
@@ -11,6 +11,7 @@ pub(super) fn plugin(app: &mut App) {
     app.init_resource::<CreatureRng>();
 }
 
+#[derive(Debug)]
 pub enum CreatureBehaviorVariant {
     Debut,
     Idle,
@@ -66,12 +67,17 @@ pub trait CreatureOperations {
         self.clamp();
     }
 
-    fn decide_behavior(&mut self, time: &Time, _rng: &mut CreatureRng) {
+    fn decide_behavior(&mut self, time: &Time, rng: &mut CreatureRng) {
         self.behavior().timer.tick(time.delta());
 
         if self.behavior().timer.just_finished() {
             match self.behavior().variant {
                 CreatureBehaviorVariant::Idle => {
+                    if rng.next_u32() % 9 == 0 {
+                        self.start_seek_point(rng);
+                        return;
+                    }
+
                     let current_y = self.transform().rotation.y;
                     self.face_left();
                     if self.transform().rotation.y != current_y {
@@ -223,6 +229,7 @@ pub trait CreatureOperations {
             max - Self::valid_point_buffer(),
         )
         .sample_interior(&mut rng.0)
+            + min.midpoint(max)
     }
 
     fn valid_point_buffer() -> Vec3 {

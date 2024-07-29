@@ -5,8 +5,10 @@ use rand_chacha::{
     ChaCha8Rng,
 };
 
+use crate::{general::play_sfx, Flags};
+
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, setup_pellets_system)
+    app.add_systems(Startup, (setup_pellets_system, setup_sfx_system))
         .add_systems(
             Update,
             (
@@ -43,6 +45,9 @@ pub struct Perishable(Timer);
 #[derive(Event, Deref)]
 pub struct PelletEvent(pub Transform);
 
+#[derive(Resource, Deref)]
+pub struct PelletSound(Handle<AudioSource>);
+
 fn setup_pellets_system(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -68,12 +73,18 @@ fn setup_pellets_system(
     commands.insert_resource(PelletRng(seeded_rng));
 }
 
+fn setup_sfx_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.insert_resource(PelletSound(asset_server.load("bubble.ogg")));
+}
+
 fn create_pellets_system(
     mut commands: Commands,
+    flags: Res<Flags>,
     mut pellet_events: EventReader<PelletEvent>,
     mut pellet_rng: ResMut<PelletRng>,
     pellet_mesh: Res<PelletMesh>,
     pellet_materials: Res<PelletMaterials>,
+    pellet_sound: Res<PelletSound>,
 ) {
     for mouse_position in pellet_events.read() {
         let fall_target = Vec3::new(
@@ -81,6 +92,9 @@ fn create_pellets_system(
             -1.7,
             pellet_rng.next_u32() as f32 / u32::MAX as f32 * 0.75 - 0.25,
         );
+
+        play_sfx(&mut commands, &pellet_sound, &flags);
+
         commands.spawn((
             Pellet,
             PelletFalling(fall_target),
