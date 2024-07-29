@@ -62,8 +62,12 @@ fn setup_camera_system(mut commands: Commands, ratatui_render: Res<RatatuiRender
 }
 
 fn setup_sfx_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.insert_resource(ClickOnSound(asset_server.load("on.ogg")));
-    commands.insert_resource(ClickOffSound(asset_server.load("off.ogg")));
+    commands.insert_resource(ClickOnSound(
+        asset_server.load("embedded://lifecycler/../assets/on.ogg"),
+    ));
+    commands.insert_resource(ClickOffSound(
+        asset_server.load("embedded://lifecycler/../assets/off.ogg"),
+    ));
 }
 
 fn toggle_daylight_system(

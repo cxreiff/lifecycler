@@ -36,8 +36,8 @@ fn setup_starfishes_system(
     asset_server: Res<AssetServer>,
     mut spawn_events: EventWriter<StarfishSpawnEvent>,
 ) {
-    let starfish =
-        asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://starfish.glb"));
+    let starfish = asset_server
+        .load(GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/starfish.glb"));
     commands.insert_resource(StarfishScene(starfish));
 
     spawn_events.send(StarfishSpawnEvent(Vec3::new(-0.3, -1.3, -0.4), 0.2));

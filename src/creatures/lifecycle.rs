@@ -45,7 +45,9 @@ pub struct FishSkeletonBundle(SceneBundle);
 
 fn setup_lifecycle_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     let fish_skeleton = SceneBundle {
-        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://skeleton.glb")),
+        scene: asset_server.load(
+            GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/skeleton.glb"),
+        ),
         ..default()
     };
     commands.insert_resource(FishSkeletonBundle(fish_skeleton));

@@ -19,14 +19,18 @@ fn setup_tank_system(
         SceneBundle {
             transform: Transform::from_scale(Vec3::new(2., 0.5, 2.))
                 .with_rotation(Quat::from_rotation_x(PI / 2.)),
-            scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://tank.glb")),
+            scene: asset_server.load(
+                GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/tank.glb"),
+            ),
             ..default()
         },
     ));
     commands.spawn(SceneBundle {
         transform: Transform::from_scale(Vec3::new(1.8, 1., 0.5))
             .with_translation(Vec3::new(0., -1.75, 0.)),
-        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://gravel.glb")),
+        scene: asset_server.load(
+            GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/gravel.glb"),
+        ),
         ..default()
     });
 
@@ -34,7 +38,8 @@ fn setup_tank_system(
         transform: Transform::from_scale(Vec3::new(2., 0.6, 2.0))
             .with_translation(Vec3::new(0., 0.0, 0.))
             .with_rotation(Quat::from_rotation_x(PI / 2.)),
-        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://base.glb")),
+        scene: asset_server
+            .load(GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/base.glb")),
         ..default()
     });
 
@@ -42,7 +47,8 @@ fn setup_tank_system(
         transform: Transform::from_scale(Vec3::new(2., 2., 0.6))
             .with_translation(Vec3::new(0., 0.0, 0.))
             .with_rotation(Quat::from_rotation_x(0.)),
-        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://frame.glb")),
+        scene: asset_server
+            .load(GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/frame.glb")),
         ..default()
     });
 
@@ -68,7 +74,7 @@ fn setup_tank_system(
             mesh: 0,
             primitive: 0,
         })
-        .from_asset("embedded://coral.glb"),
+        .from_asset("embedded://lifecycler/../assets/coral.glb"),
     );
     commands.spawn(coral_bundle_1);
 
@@ -82,12 +88,13 @@ fn setup_tank_system(
             mesh: 1,
             primitive: 0,
         })
-        .from_asset("embedded://coral.glb"),
+        .from_asset("embedded://lifecycler/../assets/coral.glb"),
     );
     commands.spawn(coral_bundle_2);
 
     let rock_bundle = SceneBundle {
-        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://rocks.glb")),
+        scene: asset_server
+            .load(GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/rocks.glb")),
         ..default()
     };
 

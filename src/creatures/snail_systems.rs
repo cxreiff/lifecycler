@@ -37,7 +37,8 @@ fn setup_snails_system(
     asset_server: Res<AssetServer>,
     mut spawn_events: EventWriter<SnailSpawnEvent>,
 ) {
-    let snail = asset_server.load(GltfAssetLabel::Scene(0).from_asset("embedded://snail.glb"));
+    let snail = asset_server
+        .load(GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/snail.glb"));
     commands.insert_resource(SnailScene(snail));
 
     spawn_events.send(SnailSpawnEvent(Vec3::new(-1.4, -1.7, 0.4), 0.1));

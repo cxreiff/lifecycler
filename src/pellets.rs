@@ -74,7 +74,9 @@ fn setup_pellets_system(
 }
 
 fn setup_sfx_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.insert_resource(PelletSound(asset_server.load("bubble.ogg")));
+    commands.insert_resource(PelletSound(
+        asset_server.load("embedded://lifecycler/../assets/bubble.ogg"),
+    ));
 }
 
 fn create_pellets_system(

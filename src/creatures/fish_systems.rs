@@ -52,7 +52,7 @@ fn setup_fish_system(
             mesh: 0,
             primitive: 0,
         })
-        .from_asset("embedded://fish.glb"),
+        .from_asset("embedded://lifecycler/../assets/fish.glb"),
     );
     commands.insert_resource(FishMesh(fish_mesh));
 

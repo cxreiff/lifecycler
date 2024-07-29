@@ -5,11 +5,11 @@ use bevy::{
     window::ExitCondition,
 };
 use bevy_atmosphere::plugin::AtmospherePlugin;
-use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_hanabi::HanabiPlugin;
 use bevy_ratatui::RatatuiPlugins;
 use bevy_ratatui_render::RatatuiRenderPlugin;
 
+mod assets;
 mod bubbles;
 mod camera;
 mod creatures;
@@ -35,7 +35,6 @@ impl Plugin for AppPlugin {
                     level: bevy::log::Level::ERROR,
                     ..default()
                 }),
-            EmbeddedAssetPlugin::default(),
             ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 90.)),
             FrameTimeDiagnosticsPlugin,
             RatatuiPlugins {
@@ -50,6 +49,7 @@ impl Plugin for AppPlugin {
         .init_resource::<Flags>();
 
         app.add_plugins((
+            assets::plugin,
             bubbles::plugin,
             camera::plugin,
             draw::plugin,
