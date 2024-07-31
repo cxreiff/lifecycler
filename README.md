@@ -35,7 +35,19 @@ lifecycler
 
 The resolution is determined by the character-wise dimensions of your terminal- so zoom out in your terminal for more detail, zoom in for a more pixelated look.
 
-## manual installation
+## other install methods
+
+### distro packages
+
+#### AUR
+
+Arch Linux users can also install [from the AUR](https://aur.archlinux.org/packages/lifecycler) using an [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
+
+```sh
+paru -S lifecycler
+```
+
+### manually
 
 Alternatively you can manually download an executable from the [itch.io page](https://cxreiff.itch.io/lifecycler) or [github releases](https://github.com/cxreiff/lifecycler/releases).
 
