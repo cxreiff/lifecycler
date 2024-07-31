@@ -6,7 +6,7 @@
 
 An aquarium that runs in your terminal!
 
-A decoration/fidget-toy that lets you watch your fishes' lifecycle while you code. Test drive of my plugin [bevy_ratatui_render](https://github.com/cxreiff/bevy_ratatui_render).
+A decoration/fidget-toy that lets you watch your fishes' lifecycle while you code. Test drive of my plugin [bevy_ratatui_render](https://github.com/cxreiff/bevy_ratatui_render), a plugin that lets you render a bevy application to the terminal using [ratatui](https://github.com/ratatui-org/ratatui)/[ratatui-image](https://github.com/benjajaja/ratatui-image).
 
 ## play with cargo
 
@@ -38,6 +38,10 @@ Alternatively you can manually download an executable from the [itch.io page](ht
 If you manually installed the executable, you will have to include the path to launch it (e.g. `./lifecycler` if in the same directory).
 
 On macOS you may need to Right-Click > Open With, selecting a supported terminal, and then selecting Open in order to bypass code signing (I haven't figured out code signing yet).
+
+## issues
+
+I am still hunting down platform-specific problems with rendering and input- if you run into one, please open an issue!
 
 ## compatibility
 
