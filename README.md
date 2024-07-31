@@ -22,6 +22,16 @@ cargo install lifecycler --locked
 lifecycler
 ```
 
+### distro packages
+
+#### AUR
+
+Arch Linux users can also install [from the AUR](https://aur.archlinux.org/packages/lifecycler) using an [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
+
+```sh
+paru -S lifecycler
+```
+
 ## controls
 
 |                    |                            |
