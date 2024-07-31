@@ -141,7 +141,13 @@ jobs:
       - name: download all packages
         uses: actions/download-artifact@v4
         with:
-          path: bin
+          path: tars
+
+      - name: folders for butler
+        run: |
+          for channel in $(ls tars); do
+            mkdir "upload/${channel%%.*}"; mv ${channel} "upload/${channel%%.*}"
+          done
 
       - name: install butler
         run: |
@@ -150,15 +156,16 @@ jobs:
           chmod +x butler
           ./butler -V
 
-      - name: upload all packages to itch.io
-        env:
-          BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
-        run: |
-          for channel in $(ls bin); do
-            ./butler push \
-              --fix-permissions \
-              --userversion='${{ env.VERSION }}' \
-              bin/"${channel}"/* \
-              '${{ env.ITCH_TARGET }}':"${channel#package-}"
-          done
+      # SKIPPING DURING JAM JUDGING PERIOD
+      # - name: upload all packages to itch.io
+      #   env:
+      #     BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
+      #   run: |
+      #     for channel in $(ls upload); do
+      #       ./butler push \
+      #         --fix-permissions \
+      #         --userversion='${{ env.VERSION }}' \
+      #         upload/"${channel}" \
+      #         '${{ env.ITCH_TARGET }}':"${channel#package-}"
+      #     done
 

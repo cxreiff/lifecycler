@@ -27,9 +27,13 @@ lifecycler
 |                    |                            |
 |--------------------|----------------------------|
 | Left Click or Drag | Dispense a food pellet.    |
-| Right click        | $80                        |
+| Space Bar          | Toggle day/night modes.    |
 | M                  | Mute/unmute sound effects. |
 | Q                  | Quit the game.             |
+
+## note
+
+The resolution is determined by the character-wise dimensions of your terminal- so zoom out in your terminal for more detail, zoom in for a more pixelated look.
 
 ## manual installation
 

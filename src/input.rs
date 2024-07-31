@@ -21,6 +21,7 @@ fn handle_keyboard_system(
     mut ratatui_events: EventReader<KeyEvent>,
     mut exit: EventWriter<AppExit>,
     mut flags: ResMut<Flags>,
+    mut daylight_event: EventWriter<DaylightEvent>,
 ) {
     for key_event in ratatui_events.read() {
         match key_event.kind {
@@ -37,6 +38,10 @@ fn handle_keyboard_system(
                     flags.muted = !flags.muted;
                 }
 
+                KeyCode::Char(' ') => {
+                    daylight_event.send_default();
+                }
+
                 _ => {}
             },
             _ => {}
@@ -48,7 +53,6 @@ fn handle_mouse_system(
     ratatui: Res<RatatuiContext>,
     mut events: EventReader<MouseEvent>,
     mut pellet_event: EventWriter<PelletEvent>,
-    mut daylight_event: EventWriter<DaylightEvent>,
     mut drag_threshold: ResMut<DragThreshold>,
     camera: Query<&Transform, With<Camera>>,
 ) {
@@ -71,9 +75,6 @@ fn handle_mouse_system(
                 } else {
                     **drag_threshold -= 1;
                 }
-            }
-            MouseEventKind::Down(MouseButton::Right) => {
-                daylight_event.send_default();
             }
             _ => {}
         }
