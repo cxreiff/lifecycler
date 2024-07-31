@@ -31,10 +31,7 @@ impl Plugin for AppPlugin {
                     exit_condition: ExitCondition::DontExit,
                     close_when_requested: false,
                 })
-                .set(LogPlugin {
-                    level: bevy::log::Level::ERROR,
-                    ..default()
-                }),
+                .disable::<LogPlugin>(),
             ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 90.)),
             FrameTimeDiagnosticsPlugin,
             RatatuiPlugins {
