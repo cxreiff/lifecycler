@@ -145,6 +145,7 @@ jobs:
 
       - name: folders for butler
         run: |
+          mkdir upload
           for channel in $(ls tars); do
             mkdir "upload/${channel%%.*}"; mv ${channel} "upload/${channel%%.*}"
           done
