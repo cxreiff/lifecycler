@@ -31,7 +31,7 @@ lifecycler
 | M                  | Mute/unmute sound effects. |
 | Q                  | Quit the game.             |
 
-## note
+## resolution
 
 The resolution is determined by the character-wise dimensions of your terminal- so zoom out in your terminal for more detail, zoom in for a more pixelated look.
 
