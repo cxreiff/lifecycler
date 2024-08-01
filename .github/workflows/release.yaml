@@ -147,7 +147,7 @@ jobs:
         run: |
           mkdir upload
           for channel in $(ls tars); do
-            mkdir "upload/${channel%%.*}"; mv ${channel} "upload/${channel%%.*}"
+            mkdir "upload/${channel%%.*}"; mv tars/${channel} "upload/${channel%%.*}"
           done
 
       - name: install butler
