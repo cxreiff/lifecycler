@@ -11,8 +11,12 @@ categories = ["games", "command-line-interface"]
 keywords = ["bevy", "ratatui", "terminal", "tui", "aquarium"]
 include = ["/src", "/assets"]
 
+[features]
+default = ["wayland"]
+wayland = ["bevy/wayland"]
+
 [dependencies]
-bevy = { version = "0.14.0", features = ["wayland"] }
+bevy = "0.14.0"
 bevy_atmosphere = "0.10.0"
 bevy_hanabi = "0.12.1"
 bevy_ratatui = "0.6.1"
