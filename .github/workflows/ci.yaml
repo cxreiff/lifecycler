@@ -31,9 +31,9 @@ jobs:
 
       - name: run tests
         run: |
-          cargo test --workspace --all-features --all-targets
+          cargo test --workspace --all-features --all-targets --locked
           # Workaround for https://github.com/rust-lang/cargo/issues/6669
-          cargo test --workspace --all-features --doc
+          cargo test --workspace --all-features --doc --locked
 
   clippy:
     name: clippy
