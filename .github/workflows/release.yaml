@@ -157,16 +157,15 @@ jobs:
           chmod +x butler
           ./butler -V
 
-      # SKIPPING DURING JAM JUDGING PERIOD
-      # - name: upload all packages to itch.io
-      #   env:
-      #     BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
-      #   run: |
-      #     for channel in $(ls upload); do
-      #       ./butler push \
-      #         --fix-permissions \
-      #         --userversion='${{ env.VERSION }}' \
-      #         upload/"${channel}" \
-      #         '${{ env.ITCH_TARGET }}':"${channel#package-}"
-      #     done
+      - name: upload all packages to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
+        run: |
+          for channel in $(ls upload); do
+            ./butler push \
+              --fix-permissions \
+              --userversion='${{ env.VERSION }}' \
+              upload/"${channel}" \
+              '${{ env.ITCH_TARGET }}':"${channel#package-}"
+          done
 
