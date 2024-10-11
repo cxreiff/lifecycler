@@ -1,8 +1,9 @@
 use std::time::Duration;
 
+use bevy::prelude::*;
 use bevy::{
-    app::ScheduleRunnerPlugin, diagnostic::FrameTimeDiagnosticsPlugin, log::LogPlugin, prelude::*,
-    window::ExitCondition,
+    app::ScheduleRunnerPlugin, diagnostic::FrameTimeDiagnosticsPlugin, log::LogPlugin,
+    winit::WinitPlugin,
 };
 use bevy_atmosphere::plugin::AtmospherePlugin;
 use bevy_hanabi::HanabiPlugin;
@@ -26,11 +27,7 @@ impl Plugin for AppPlugin {
         app.add_plugins((
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())
-                .set(WindowPlugin {
-                    primary_window: None,
-                    exit_condition: ExitCondition::DontExit,
-                    close_when_requested: false,
-                })
+                .disable::<WinitPlugin>()
                 .disable::<LogPlugin>(),
             ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 90.)),
             FrameTimeDiagnosticsPlugin,

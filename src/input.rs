@@ -4,6 +4,7 @@ use bevy_ratatui::{
     terminal::RatatuiContext,
 };
 use crossterm::event::{KeyCode, KeyEventKind, MouseButton, MouseEventKind};
+use ratatui::layout::Size;
 
 use crate::{camera::DaylightEvent, pellets::PelletEvent, Flags};
 
@@ -84,7 +85,7 @@ fn handle_mouse_system(
 fn terminal_coords_to_world_transform(
     column: u16,
     row: u16,
-    terminal_size: ratatui::layout::Rect,
+    terminal_size: Size,
     camera: &Transform,
 ) -> Option<Transform> {
     let block_width = terminal_size.width;
