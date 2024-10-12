@@ -1,15 +1,12 @@
-name: release
+name: itchio
 
 on:
-  push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+*"
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'version number in the format `v1.2.3`'
-        required: true
-        type: string
+  on:
+    workflow_run:
+        workflows: ['release']
+        types: [completed]
+        branches:
+            - 'main'
 
 env:
   # The base filename of the binary produced by `cargo build`.
