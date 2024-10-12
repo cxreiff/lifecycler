@@ -1,0 +1,87 @@
+name: itchio
+
+on:
+  workflow_run:
+      workflows: ['release']
+      types: [completed]
+      branches:
+          - 'main'
+
+env:
+  ITCH_TARGET: cxreiff/lifecycler
+
+jobs:
+  # determine the version number for this workflow.
+  get-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get version number from tag
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "${GITHUB_OUTPUT}"
+    outputs:
+      # use the input from workflow dispatch, or fall back to the git tag.
+      version: ${{ inputs.version || steps.tag.outputs.tag }}
+
+    # strategy:
+    #   matrix:
+    #     include:
+    #       - target: x86_64-unknown-linux-gnu
+    #         os: ubuntu-latest
+    #         name: linux
+    #       - target: x86_64-apple-darwin
+    #         os: macos-latest
+    #         name: macos
+    #       - target: x86_64-pc-windows-msvc
+    #         os: windows-latest
+    #         name: windows
+
+  # upload all packages to itch.io.
+  upload-to-itch:
+    runs-on: ubuntu-latest
+    needs:
+      - get-version
+      - get-itch-target
+      - upload-assets
+    env:
+      VERSION: ${{ needs.get-version.outputs.version }}
+    steps:
+      - name: download artifact
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: release.yml
+          workflow_conclusion: success
+          branch: main
+          skip_unpack: false
+          if_no_artifact_found: fail
+          path: tars
+
+      - name: folders for butler
+        run: |
+          ls tars
+          mkdir upload
+          for channel in $(ls tars); do
+            echo "${channel}"
+            mkdir "upload/${channel%%.*}"; mv tars/${channel} "upload/${channel%%.*}"
+          done
+
+      - name: install butler
+        run: |
+          curl -L -o butler.zip 'https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default'
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+
+      - name: upload all packages to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
+        run: |
+          for channel in $(ls upload); do
+            ./butler push \
+              --fix-permissions \
+              --userversion='${{ env.VERSION }}' \
+              upload/"${channel}" \
+              '${{ env.ITCH_TARGET }}':"${channel#package-}"
+          done
+
