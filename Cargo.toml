@@ -11,10 +11,6 @@ homepage = "https://github.com/cxreiff/lifecycler"
 categories = ["games", "command-line-interface"]
 keywords = ["bevy", "ratatui", "terminal", "tui", "aquarium"]
 
-[features]
-default = ["wayland"]
-wayland = ["bevy/wayland"]
-
 [dependencies]
 bevy = "0.14.2"
 bevy_atmosphere = "0.10.0"
@@ -72,5 +68,3 @@ pr-run-mode = "plan"
 [workspace.metadata.dist.dependencies.apt]
 libasound2-dev = "*"
 libudev-dev = "*"
-libwayland-dev = "*"
-libxkbcommon-dev = "*"
