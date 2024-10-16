@@ -8,6 +8,7 @@ on:
 jobs:
   itch-io:
     uses: cxreiff/github_workflows/.github/workflows/rust_release_itchio.yml@main
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     secrets:
       DEDICATED_TOKEN: ${{ secrets.DEDICATED_TOKEN }}
       BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
