@@ -28,6 +28,8 @@
             nativeBuildInputs = with pkgs; [
               pkg-config
             ];
+
+            # https://github.com/bevyengine/bevy/blob/main/docs/linux_dependencies.md#nix
             buildInputs = with pkgs; [
               udev
               alsa-lib
