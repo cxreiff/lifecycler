@@ -40,7 +40,7 @@ fn setup_starfishes_system(
         .load(GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/starfish.glb"));
     commands.insert_resource(StarfishScene(starfish));
 
-    spawn_events.send(StarfishSpawnEvent(Vec3::new(-0.3, -1.3, -0.4), 0.2));
+    spawn_events.write(StarfishSpawnEvent(Vec3::new(-0.3, -1.3, -0.4), 0.2));
 }
 
 fn spawn_starfishes_system(
@@ -55,15 +55,7 @@ fn spawn_starfishes_system(
         let mut behavior = CreatureBehavior::default();
         behavior.timer.set_duration(Duration::from_secs(12));
 
-        commands.spawn((
-            Starfish,
-            behavior,
-            SceneBundle {
-                transform,
-                scene: fish_scene.clone(),
-                ..default()
-            },
-        ));
+        commands.spawn((Starfish, behavior, SceneRoot(fish_scene.clone()), transform));
     }
 }
 

@@ -20,7 +20,7 @@ impl<'a> SnailOperations<'a> {
     }
 }
 
-impl<'a> CreatureOperations for SnailOperations<'a> {
+impl CreatureOperations for SnailOperations<'_> {
     fn behavior_debut(&mut self, _time: &Time, _rng: &mut CreatureRng) {
         if self.transform.translation.x < 0. {
             self.start_swim_right();
@@ -30,7 +30,7 @@ impl<'a> CreatureOperations for SnailOperations<'a> {
     }
 
     fn behavior_idle(&mut self, time: &Time) {
-        self.transform.translation.z += time.elapsed_seconds().sin() / 10_000.;
+        self.transform.translation.z += time.elapsed_secs().sin() / 10_000.;
     }
 
     fn behavior_seek_pellet(
@@ -50,7 +50,7 @@ impl<'a> CreatureOperations for SnailOperations<'a> {
             let (min, max) = Self::valid_area();
             self.transform.translation = self.transform.translation.move_towards(
                 pellet_transform.translation.clamp(min, max),
-                time.delta_seconds() * Self::base_speed() * 2.,
+                time.delta_secs() * Self::base_speed() * 2.,
             );
 
             if self
@@ -59,7 +59,7 @@ impl<'a> CreatureOperations for SnailOperations<'a> {
                 .distance(pellet_transform.translation)
                 < 0.1
             {
-                if let Some(mut entity) = commands.get_entity(pellet_entity) {
+                if let Ok(mut entity) = commands.get_entity(pellet_entity) {
                     entity.insert(AttemptDespawn);
                 }
             }

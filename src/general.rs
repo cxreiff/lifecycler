@@ -14,7 +14,7 @@ fn deferred_despawn_system(
     to_despawn_query: Query<Entity, With<AttemptDespawn>>,
 ) {
     for to_despawn in to_despawn_query.iter() {
-        if let Some(mut entity) = commands.get_entity(to_despawn) {
+        if let Ok(mut entity) = commands.get_entity(to_despawn) {
             entity.despawn();
         }
     }
@@ -22,9 +22,6 @@ fn deferred_despawn_system(
 
 pub fn play_sfx(commands: &mut Commands, source: &Handle<AudioSource>, flags: &Flags) {
     if !flags.muted {
-        commands.spawn(AudioBundle {
-            source: source.clone(),
-            settings: PlaybackSettings::DESPAWN,
-        });
+        commands.spawn((AudioPlayer::new(source.clone()), PlaybackSettings::DESPAWN));
     }
 }

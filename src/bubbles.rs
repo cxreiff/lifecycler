@@ -3,7 +3,7 @@ use std::time::Duration;
 use bevy::{prelude::*, time::common_conditions::on_timer};
 use bevy_hanabi::{
     Attribute, ColorOverLifetimeModifier, EffectAsset, ExprWriter, Gradient, ParticleEffect,
-    ParticleEffectBundle, SetAttributeModifier, SizeOverLifetimeModifier, Spawner, WriterExpr,
+    SetAttributeModifier, SizeOverLifetimeModifier, SpawnerSettings, WriterExpr,
 };
 
 const BUBBLE_INTERVAL_SECONDS: f32 = 5.;
@@ -52,12 +52,13 @@ fn bubbles_setup_system(mut commands: Commands, mut effects: ResMut<Assets<Effec
 
     let update_color = ColorOverLifetimeModifier {
         gradient: color_gradient,
+        ..default()
     };
 
     let mut size_gradient = Gradient::new();
-    size_gradient.add_key(0.0, Vec2::splat(0.05));
-    size_gradient.add_key(0.3, Vec2::splat(0.05));
-    size_gradient.add_key(1.0, Vec2::splat(0.02));
+    size_gradient.add_key(0.0, Vec3::splat(0.05));
+    size_gradient.add_key(0.3, Vec3::splat(0.05));
+    size_gradient.add_key(1.0, Vec3::splat(0.02));
 
     let update_size = SizeOverLifetimeModifier {
         gradient: size_gradient,
@@ -66,8 +67,8 @@ fn bubbles_setup_system(mut commands: Commands, mut effects: ResMut<Assets<Effec
 
     let bubbles_effect = effects.add(
         EffectAsset::new(
-            vec![32768],
-            Spawner::rate((1. / BUBBLE_INTERVAL_SECONDS).into()),
+            32768,
+            SpawnerSettings::rate((1. / BUBBLE_INTERVAL_SECONDS).into()),
             writer.clone().finish(),
         )
         .init(init_size)
@@ -81,11 +82,8 @@ fn bubbles_setup_system(mut commands: Commands, mut effects: ResMut<Assets<Effec
 
     commands.spawn((
         GravelBubbler,
-        ParticleEffectBundle {
-            effect: ParticleEffect::new(bubbles_effect.clone()),
-            transform: Transform::from_xyz(0., -1.7, 0.15),
-            ..default()
-        },
+        ParticleEffect::new(bubbles_effect.clone()),
+        Transform::from_xyz(0., -1.7, 0.15),
     ));
 
     commands.insert_resource(BubblesEffect(bubbles_effect));
@@ -93,9 +91,7 @@ fn bubbles_setup_system(mut commands: Commands, mut effects: ResMut<Assets<Effec
 
 fn gravel_bubbles_mover(
     time: Res<Time>,
-    mut gravel_bubbler: Query<&mut Transform, With<GravelBubbler>>,
+    mut gravel_bubbler: Single<&mut Transform, With<GravelBubbler>>,
 ) {
-    let mut transform = gravel_bubbler.single_mut();
-
-    transform.translation.x = 1.7 * time.elapsed_seconds().sin();
+    gravel_bubbler.translation.x = 1.7 * time.elapsed_secs().sin();
 }

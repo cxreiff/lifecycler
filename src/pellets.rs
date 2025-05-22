@@ -100,12 +100,9 @@ fn create_pellets_system(
         commands.spawn((
             Pellet,
             PelletFalling(fall_target),
-            PbrBundle {
-                transform: **mouse_position,
-                mesh: pellet_mesh.clone(),
-                material: pellet_materials.choose(&mut pellet_rng.0).unwrap().clone(),
-                ..default()
-            },
+            **mouse_position,
+            Mesh3d(pellet_mesh.clone()),
+            MeshMaterial3d(pellet_materials.choose(&mut pellet_rng.0).unwrap().clone()),
         ));
     }
 }
@@ -118,10 +115,10 @@ fn move_pellets_system(
     for (id, mut pellet_transform, PelletFalling(fall_target)) in &mut pellets {
         pellet_transform.translation = pellet_transform
             .translation
-            .move_towards(*fall_target, time.delta_seconds() * 0.3);
+            .move_towards(*fall_target, time.delta_secs() * 0.3);
 
         pellet_transform.translation.x +=
-            (time.elapsed_seconds() + (fall_target.x * 16.) % 3.).sin() / 800.;
+            (time.elapsed_secs() + (fall_target.x * 16.) % 3.).sin() / 800.;
         pellet_transform.translation.x = pellet_transform.translation.x.clamp(-1.8, 1.8);
 
         if pellet_transform.translation.distance(*fall_target) < 0.003 {

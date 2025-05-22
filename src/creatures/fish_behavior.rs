@@ -36,9 +36,9 @@ impl<'a> FishOperations<'a> {
     }
 }
 
-impl<'a> CreatureOperations for FishOperations<'a> {
+impl CreatureOperations for FishOperations<'_> {
     fn behavior_debut(&mut self, time: &Time, rng: &mut CreatureRng) {
-        self.transform.translation.y += time.delta_seconds() * Self::base_speed();
+        self.transform.translation.y += time.delta_secs() * Self::base_speed();
 
         if self.transform.translation.y > -0.5 {
             self.start_seek_point(rng);
@@ -46,7 +46,7 @@ impl<'a> CreatureOperations for FishOperations<'a> {
     }
 
     fn behavior_idle(&mut self, time: &Time) {
-        self.transform.translation.y += time.elapsed_seconds().sin() / 3000.;
+        self.transform.translation.y += time.elapsed_secs().sin() / 3000.;
     }
 
     fn behavior_seek_pellet(
@@ -70,7 +70,7 @@ impl<'a> CreatureOperations for FishOperations<'a> {
 
             self.transform.translation = self.transform.translation.move_towards(
                 pellet_transform.translation,
-                time.delta_seconds() * Self::base_speed() * 4.,
+                time.delta_secs() * Self::base_speed() * 4.,
             );
 
             if self
@@ -79,7 +79,7 @@ impl<'a> CreatureOperations for FishOperations<'a> {
                 .distance(pellet_transform.translation)
                 < 0.1
             {
-                if let Some(mut entity) = commands.get_entity(pellet_entity) {
+                if let Ok(mut entity) = commands.get_entity(pellet_entity) {
                     self.mortality.satiation += 5;
                     entity.insert(AttemptDespawn);
                 }

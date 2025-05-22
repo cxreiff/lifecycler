@@ -12,15 +12,15 @@ categories = ["games", "command-line-interface"]
 keywords = ["bevy", "ratatui", "terminal", "tui", "aquarium"]
 
 [dependencies]
-bevy = "0.14.2"
-bevy_atmosphere = "0.10.0"
-bevy_hanabi = "=0.12.0"
-bevy_ratatui = "0.6.3"
-bevy_ratatui_render = "0.5.7"
-crossterm = "0.28.0"
+bevy = "0.16.0"
+bevy_atmosphere = "0.13.0"
+bevy_hanabi = { git="https://github.com/djeedai/bevy_hanabi", branch = "main" }
+bevy_ratatui = "0.9.0"
+bevy_ratatui_camera = "0.14.0"
+crossterm = "0.29.0"
 rand = "0.8.5"
 rand_chacha = "0.3.1"
-ratatui = "0.28.1"
+ratatui = "0.29.0"
 
 [lints.clippy]
 too_many_arguments = "allow"
@@ -40,9 +40,6 @@ opt-level = 'z'
 
 [profile.release-native]
 inherits = "release"
-
-[patch.crates-io]
-zune-jpeg = { git = "https://github.com/ironpeak/zune-image", rev = "eebb01b72c07aaf8b00200d9d87d4cba6f01651f" }
 
 # The profile that 'cargo dist' will build with
 [profile.dist]

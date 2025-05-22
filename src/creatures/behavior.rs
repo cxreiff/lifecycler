@@ -155,7 +155,7 @@ pub trait CreatureOperations {
     fn behavior_idle(&mut self, time: &Time);
 
     fn behavior_swim_right(&mut self, time: &Time) {
-        self.transform().translation.x += time.delta_seconds() * Self::base_speed();
+        self.transform().translation.x += time.delta_secs() * Self::base_speed();
 
         let (_, max) = Self::valid_area();
         if self.transform().translation.x > max.x {
@@ -164,7 +164,7 @@ pub trait CreatureOperations {
     }
 
     fn behavior_swim_left(&mut self, time: &Time) {
-        self.transform().translation.x -= time.delta_seconds() * Self::base_speed();
+        self.transform().translation.x -= time.delta_secs() * Self::base_speed();
 
         let (min, _) = Self::valid_area();
         if self.transform().translation.x < min.x {
@@ -176,7 +176,7 @@ pub trait CreatureOperations {
         self.transform().translation = self
             .transform()
             .translation
-            .move_towards(target, time.delta_seconds() * Self::base_speed());
+            .move_towards(target, time.delta_secs() * Self::base_speed());
 
         if self.transform().translation.distance(target) < 0.1 {
             self.start_idle();

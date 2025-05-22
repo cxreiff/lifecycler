@@ -1,6 +1,6 @@
-use bevy::{core_pipeline::bloom::BloomSettings, prelude::*};
+use bevy::{core_pipeline::bloom::Bloom, prelude::*};
 use bevy_atmosphere::plugin::AtmosphereCamera;
-use bevy_ratatui_render::RatatuiRenderContext;
+use bevy_ratatui_camera::RatatuiCamera;
 
 use crate::{general::play_sfx, Flags};
 
@@ -31,33 +31,25 @@ pub struct ClickOnSound(Handle<AudioSource>);
 #[derive(Resource, Deref)]
 pub struct ClickOffSound(Handle<AudioSource>);
 
-fn setup_camera_system(mut commands: Commands, ratatui_render: Res<RatatuiRenderContext>) {
+fn setup_camera_system(mut commands: Commands) {
     commands.spawn((
-        Camera3dBundle {
-            transform: Transform::from_xyz(0., 0., 5.).looking_at(Vec3::ZERO, Vec3::Y),
-            camera: Camera {
-                hdr: true,
-                target: ratatui_render.target("main").unwrap_or_default(),
-                ..default()
-            },
-            ..default()
-        },
-        BloomSettings::OLD_SCHOOL,
+        Camera3d::default(),
+        Transform::from_xyz(0., 0., 5.).looking_at(Vec3::ZERO, Vec3::Y),
+        RatatuiCamera::default(),
+        Bloom::OLD_SCHOOL,
         AtmosphereCamera::default(),
+        Msaa::Off,
     ));
 
     commands.spawn((
         Daylight,
-        PointLightBundle {
-            transform: Transform::from_translation(LIGHT_TRANSLATION_DAYTIME),
-            point_light: PointLight {
-                intensity: LIGHT_INTENSITY_DAYTIME,
-                color: LIGHT_COLOR_DAYTIME,
-                shadows_enabled: true,
-                ..default()
-            },
+        PointLight {
+            intensity: LIGHT_INTENSITY_DAYTIME,
+            color: LIGHT_COLOR_DAYTIME,
+            shadows_enabled: true,
             ..default()
         },
+        Transform::from_translation(LIGHT_TRANSLATION_DAYTIME),
     ));
 }
 
@@ -72,26 +64,28 @@ fn setup_sfx_system(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn toggle_daylight_system(
     mut commands: Commands,
-    camera_query: Query<(Entity, Option<&AtmosphereCamera>), With<Camera>>,
-    mut light_query: Query<(&mut PointLight, &mut Transform), With<Daylight>>,
+    camera: Single<(Entity, Option<&AtmosphereCamera>), With<Camera>>,
+    mut light: Single<(&mut PointLight, &mut Transform), With<Daylight>>,
     mut daylight_events: EventReader<DaylightEvent>,
     flags: Res<Flags>,
     on_click: Res<ClickOnSound>,
     off_click: Res<ClickOffSound>,
 ) {
     for _ in daylight_events.read() {
-        let (camera, atmosphere) = camera_query.single();
-        let (mut light, mut light_transform) = light_query.single_mut();
+        let (ref camera_entity, ref atmosphere) = *camera;
+        let (ref mut light, ref mut light_transform) = *light;
 
         if atmosphere.is_some() {
             play_sfx(&mut commands, &off_click, &flags);
-            commands.entity(camera).remove::<AtmosphereCamera>();
+            commands.entity(*camera_entity).remove::<AtmosphereCamera>();
             light.intensity = LIGHT_INTENSITY_NIGHTTIME;
             light.color = LIGHT_COLOR_NIGHTTIME;
             light_transform.translation = LIGHT_TRANSLATION_NIGHTTIME;
         } else {
             play_sfx(&mut commands, &on_click, &flags);
-            commands.entity(camera).insert(AtmosphereCamera::default());
+            commands
+                .entity(*camera_entity)
+                .insert(AtmosphereCamera::default());
             light.intensity = LIGHT_INTENSITY_DAYTIME;
             light.color = LIGHT_COLOR_DAYTIME;
             light_transform.translation = LIGHT_TRANSLATION_DAYTIME;

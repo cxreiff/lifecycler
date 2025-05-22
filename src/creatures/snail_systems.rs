@@ -41,8 +41,8 @@ fn setup_snails_system(
         .load(GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/snail.glb"));
     commands.insert_resource(SnailScene(snail));
 
-    spawn_events.send(SnailSpawnEvent(Vec3::new(-1.4, -1.7, 0.4), 0.1));
-    spawn_events.send(SnailSpawnEvent(Vec3::new(1.4, -1.7, -0.1), 0.07));
+    spawn_events.write(SnailSpawnEvent(Vec3::new(-1.4, -1.7, 0.4), 0.1));
+    spawn_events.write(SnailSpawnEvent(Vec3::new(1.4, -1.7, -0.1), 0.07));
 }
 
 fn spawn_snails_system(
@@ -57,15 +57,7 @@ fn spawn_snails_system(
             .timer
             .set_duration(behavior.timer.duration() - Duration::from_secs((size * 10.) as u64 % 2));
 
-        commands.spawn((
-            Snail,
-            behavior,
-            SceneBundle {
-                transform,
-                scene: fish_scene.clone(),
-                ..default()
-            },
-        ));
+        commands.spawn((Snail, behavior, SceneRoot(fish_scene.clone()), transform));
     }
 }
 

@@ -16,7 +16,7 @@ impl<'a> StarfishOperations<'a> {
     }
 }
 
-impl<'a> CreatureOperations for StarfishOperations<'a> {
+impl CreatureOperations for StarfishOperations<'_> {
     fn decide_behavior(&mut self, time: &Time, rng: &mut CreatureRng) {
         self.behavior().timer.tick(time.delta());
 
@@ -34,7 +34,7 @@ impl<'a> CreatureOperations for StarfishOperations<'a> {
 
     fn behavior_idle(&mut self, time: &Time) {
         self.transform()
-            .rotate_z((time.elapsed_seconds() / 10.).sin() * Self::base_speed() * -0.1);
+            .rotate_z((time.elapsed_secs() / 10.).sin() * Self::base_speed() * -0.1);
     }
 
     fn base_speed() -> f32 {

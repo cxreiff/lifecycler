@@ -72,7 +72,7 @@ fn setup_fish_system(
 
     commands.insert_resource(FishMaterials(fish_materials));
 
-    spawn_events.send(FishSpawnEvent(
+    spawn_events.write(FishSpawnEvent(
         FishOperations::valid_random_point(&mut rng).with_y(-1.7),
     ));
 }
@@ -86,7 +86,7 @@ fn populate_fish_system(
     let fish_count = fishes.iter().len() + skeletons.iter().len();
 
     if fish_count < FISH_MAX {
-        spawn_events.send(FishSpawnEvent(
+        spawn_events.write(FishSpawnEvent(
             FishOperations::valid_random_point(&mut rng).with_y(-1.7),
         ));
     }
@@ -108,12 +108,9 @@ fn fish_spawn_system(
             Fish,
             CreatureBehavior::default(),
             FishMortality::new(&mut rng),
-            PbrBundle {
-                transform,
-                mesh: fish_mesh.clone(),
-                material: fish_materials.choose(&mut rng.0).unwrap().clone(),
-                ..default()
-            },
+            transform,
+            Mesh3d(fish_mesh.clone()),
+            MeshMaterial3d(fish_materials.choose(&mut rng.0).unwrap().clone()),
         ));
     }
 }

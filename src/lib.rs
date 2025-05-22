@@ -8,7 +8,7 @@ use bevy::{
 use bevy_atmosphere::plugin::AtmospherePlugin;
 use bevy_hanabi::HanabiPlugin;
 use bevy_ratatui::RatatuiPlugins;
-use bevy_ratatui_render::RatatuiRenderPlugin;
+use bevy_ratatui_camera::RatatuiCameraPlugin;
 
 mod assets;
 mod bubbles;
@@ -30,16 +30,18 @@ impl Plugin for AppPlugin {
                 .disable::<WinitPlugin>()
                 .disable::<LogPlugin>(),
             ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1. / 90.)),
-            FrameTimeDiagnosticsPlugin,
+            FrameTimeDiagnosticsPlugin {
+                smoothing_factor: 1.0,
+                ..default()
+            },
             RatatuiPlugins {
                 enable_mouse_capture: true,
                 ..default()
             },
-            RatatuiRenderPlugin::new("main", (512, 512)),
+            RatatuiCameraPlugin,
             AtmospherePlugin,
             HanabiPlugin,
         ))
-        .insert_resource(Msaa::Off)
         .init_resource::<Flags>();
 
         app.add_plugins((

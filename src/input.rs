@@ -1,10 +1,7 @@
 use bevy::prelude::*;
-use bevy_ratatui::{
-    event::{KeyEvent, MouseEvent},
-    terminal::RatatuiContext,
-};
+use bevy_ratatui::event::{KeyEvent, MouseEvent};
+use bevy_ratatui_camera::{RatatuiCameraLastArea, RatatuiCameraWidget};
 use crossterm::event::{KeyCode, KeyEventKind, MouseButton, MouseEventKind};
-use ratatui::layout::Size;
 
 use crate::{camera::DaylightEvent, pellets::PelletEvent, Flags};
 
@@ -28,7 +25,7 @@ fn handle_keyboard_system(
         match key_event.kind {
             KeyEventKind::Press | KeyEventKind::Repeat => match key_event.code {
                 KeyCode::Char('q') => {
-                    exit.send_default();
+                    exit.write_default();
                 }
 
                 KeyCode::Char('d') => {
@@ -40,7 +37,7 @@ fn handle_keyboard_system(
                 }
 
                 KeyCode::Char(' ') => {
-                    daylight_event.send_default();
+                    daylight_event.write_default();
                 }
 
                 _ => {}
@@ -51,28 +48,57 @@ fn handle_keyboard_system(
 }
 
 fn handle_mouse_system(
-    ratatui: Res<RatatuiContext>,
     mut events: EventReader<MouseEvent>,
     mut pellet_event: EventWriter<PelletEvent>,
     mut drag_threshold: ResMut<DragThreshold>,
-    camera: Query<&Transform, With<Camera>>,
+    camera: Single<
+        (
+            &Camera,
+            &GlobalTransform,
+            &RatatuiCameraWidget,
+            &RatatuiCameraLastArea,
+        ),
+        With<Camera>,
+    >,
 ) {
     for event in events.read() {
-        let crossterm::event::MouseEvent {
-            kind, column, row, ..
-        } = event.0;
+        let (camera, camera_transform, camera_widget, last_area) = *camera;
 
-        match kind {
+        match event.kind {
             MouseEventKind::Drag(MouseButton::Left) | MouseEventKind::Down(MouseButton::Left) => {
-                if **drag_threshold == 0 || kind == MouseEventKind::Down(MouseButton::Left) {
-                    let size = ratatui.size().unwrap();
-                    let camera_transform = camera.single();
-                    if let Some(transform) =
-                        terminal_coords_to_world_transform(column, row, size, camera_transform)
-                    {
-                        pellet_event.send(PelletEvent(transform));
-                    }
+                if **drag_threshold == 0 || event.kind == MouseEventKind::Down(MouseButton::Left) {
                     **drag_threshold = DRAGS_PER_EVENT;
+
+                    let ndc = camera_widget.cell_to_ndc(
+                        **last_area,
+                        IVec2::new(event.column as i32, event.row as i32),
+                    );
+
+                    let world_position = camera.ndc_to_world(camera_transform, ndc).unwrap();
+
+                    let viewport_position = camera
+                        .world_to_viewport(camera_transform, world_position)
+                        .unwrap();
+
+                    let ray = camera
+                        .viewport_to_world(camera_transform, viewport_position)
+                        .unwrap();
+
+                    let Some(intersect_distance) =
+                        ray.intersect_plane(Vec3::ZERO, InfinitePlane3d::new(Vec3::Z))
+                    else {
+                        return;
+                    };
+
+                    let intersect = ray.get_point(intersect_distance);
+
+                    if !(-1.9..1.9).contains(&intersect.x) {
+                        return;
+                    }
+
+                    let world_transform = Transform::from_translation(intersect);
+
+                    pellet_event.write(PelletEvent(world_transform));
                 } else {
                     **drag_threshold -= 1;
                 }
@@ -80,29 +106,4 @@ fn handle_mouse_system(
             _ => {}
         }
     }
-}
-
-fn terminal_coords_to_world_transform(
-    column: u16,
-    row: u16,
-    terminal_size: Size,
-    camera: &Transform,
-) -> Option<Transform> {
-    let block_width = terminal_size.width;
-    let block_height = terminal_size.height * 2;
-
-    let render_column = column as f32 - block_width.saturating_sub(block_height) as f32 / 2.;
-    let render_row = (row as f32 - block_height.saturating_sub(block_width) as f32 / 4.) * 2.;
-
-    let x = render_column / block_width.min(block_height) as f32 * 2. - 1.;
-    let y = render_row / block_height.min(block_width) as f32 * 2. - 1.;
-
-    if x.abs() > 0.9 || y > 0.9 {
-        return None;
-    }
-
-    let mut world_coords = *camera * Vec3::new(x * 2.05, -y * 2. + 0.02, 0.);
-    world_coords.z = 0.;
-
-    Some(Transform::from_translation(world_coords))
 }

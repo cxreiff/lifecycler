@@ -41,23 +41,21 @@ impl FishMortality {
 pub struct FishSkeleton;
 
 #[derive(Resource, Deref)]
-pub struct FishSkeletonBundle(SceneBundle);
+pub struct FishSkeletonScene(SceneRoot);
 
 fn setup_lifecycle_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let fish_skeleton = SceneBundle {
-        scene: asset_server.load(
+    let fish_skeleton =
+        SceneRoot(asset_server.load(
             GltfAssetLabel::Scene(0).from_asset("embedded://lifecycler/../assets/skeleton.glb"),
-        ),
-        ..default()
-    };
-    commands.insert_resource(FishSkeletonBundle(fish_skeleton));
+        ));
+    commands.insert_resource(FishSkeletonScene(fish_skeleton));
 }
 
 fn age_the_living_system(
     mut commands: Commands,
     time: Res<Time>,
     mut living_query: Query<(Entity, &mut FishMortality, &mut Transform)>,
-    fish_skeleton_bundle: Res<FishSkeletonBundle>,
+    fish_skeleton: Res<FishSkeletonScene>,
 ) {
     for (entity, mut mortality, mut transform) in living_query.iter_mut() {
         mortality.next_age_timer.tick(time.delta());
@@ -74,9 +72,11 @@ fn age_the_living_system(
 
             if mortality.satiation == 0 || mortality.age > mortality.longevity {
                 commands.entity(entity).despawn();
-                let mut fish_skeleton = fish_skeleton_bundle.clone();
-                fish_skeleton.transform = transform.with_rotation(Quat::from_rotation_x(PI));
-                commands.spawn((FishSkeleton, fish_skeleton));
+                commands.spawn((
+                    FishSkeleton,
+                    fish_skeleton.clone(),
+                    transform.with_rotation(Quat::from_rotation_x(PI)),
+                ));
             }
         }
 
@@ -96,11 +96,11 @@ fn fish_skeleton_system(
     mut spawn_events: EventWriter<FishSpawnEvent>,
 ) {
     for (entity, mut transform) in skeleton_query.iter_mut() {
-        transform.translation.y -= time.delta_seconds() / 10.;
+        transform.translation.y -= time.delta_secs() / 10.;
 
         if transform.translation.y < -1.9 {
             commands.entity(entity).despawn();
-            spawn_events.send(FishSpawnEvent(transform.translation));
+            spawn_events.write(FishSpawnEvent(transform.translation));
         }
     }
 }
