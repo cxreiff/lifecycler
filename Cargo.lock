@@ -3123,7 +3123,7 @@ dependencies = [
 
 [[package]]
 name = "lifecycler"
-version = "0.2.9"
+version = "0.2.10"
 dependencies = [
  "bevy",
  "bevy_atmosphere",
